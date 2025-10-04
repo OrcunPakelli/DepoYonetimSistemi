@@ -1,7 +1,7 @@
 namespace DepoYonetimSistemi.Models
 {
     //Veri tabanı için Transaction tablosu
-    class Transaction
+    public class Transaction
     {
         public int TransactionId { get; set; } //Primary Key
 
