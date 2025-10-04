@@ -1,4 +1,9 @@
-﻿<h2>Giriş</h2>
+﻿@{
+    ViewData["Titte"] = "Login";
+}
+
+
+<h2>Giriş</h2>
 
 <!--Giriş ekranı-->
 <form asp-action="Index" method="post"> <!--metot: post--> 
@@ -14,3 +19,10 @@
         <button type="submit">Giriş Yap</button>
     </div>
 </form>
+
+@if(ViewBag.Message != null)
+{
+    <p style="color:red">
+        @ViewBag.Message
+    </p>
+}

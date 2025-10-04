@@ -5,7 +5,7 @@ using Microsoft.VisualBasic;
 
 namespace DepoYonetimSistemi.Data
 {
-    class AppDbContext : DbContext
+    public class AppDbContext : DbContext
     {
         //DbContext Constructor bağlantı ayarları
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -23,8 +23,8 @@ namespace DepoYonetimSistemi.Data
                 new User
                 {
                     UserId = 1,
-                    UserName = "Admin",
-                    Password = "Admin",
+                    UserName = "admin",
+                    Password = "admin",
                     Role = UserRole.SystemAdmin,
                     CreatedAt = new DateTime(2025,1,1)
                 }
