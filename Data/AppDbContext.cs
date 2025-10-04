@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using DepoYonetimSistemi.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.VisualBasic;
 
 namespace DepoYonetimSistemi.Data
 {
@@ -12,5 +14,21 @@ namespace DepoYonetimSistemi.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>().HasData
+            (
+                new User
+                {
+                    UserId = 1,
+                    UserName = "Admin",
+                    Password = "Admin",
+                    Role = UserRole.SystemAdmin,
+                    CreatedAt = new DateTime(2025,1,1)
+                }
+            );
+        }
     }
 }

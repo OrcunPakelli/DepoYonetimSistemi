@@ -1,1 +1,16 @@
-﻿
+﻿<h2>Giriş</h2>
+
+<!--Giriş ekranı-->
+<form asp-action="Index" method="post"> <!--metot: post--> 
+    <div>
+        <label for="username">Kullanici Adi:</label> <!-- kullanıcı adı-->
+        <input type="text" id="username" name="username">
+    </div>
+    <div>
+        <label for="password">Sifre:</label> <!-- şifre -->
+        <input type="password" id="password" name="password">
+    </div>
+    <div>
+        <button type="submit">Giriş Yap</button>
+    </div>
+</form>
