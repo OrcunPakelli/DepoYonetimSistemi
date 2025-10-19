@@ -19,40 +19,54 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        //Eğer kullanıcı giriş yapmamışsa Index sayfası yerine Login sayfasına yönlendiriliyor
+        var username = HttpContext.Session.GetString("Username");//Sessiondan kullanıcı adı bilgisi alınıyor
+        if (string.IsNullOrEmpty(username))//Giriş yapılmış mı kontrol ediliyor
+        {
+            return RedirectToAction("Login", "Home");//Login sayfasına yönlendiriliyor
+        }
+
         return View();
+    }
+
+    public IActionResult Login()
+    {
+        //Eğer kullanıcı giriş yapmışsa Login sayfası yerine Index sayfasına yönlendiriliyor
+        var username = HttpContext.Session.GetString("Username");//Sessiondan kullanıcı adı bilgisi alınıyor
+        if (!string.IsNullOrEmpty(username))//Giriş yapılmış mı kontrol ediliyor
+        {
+            return RedirectToAction("Index", "Home");//Index sayfasına yönlendiriliyor
+        }
+        return View();
+    }
+
+
+    [HttpPost]
+    public IActionResult Login(string Username, string Password)
+    {
+        //kullanıcı giriş işlemler
+        var user = _context.Users.FirstOrDefault(u => u.UserName == Username && u.Password == Password);//Girilen giriş bilgileri kontrol ediliyor
+        if (user != null)//Kullanıcı veri tabanına kayıtlı mı kontrol ediliyor
+        {
+            HttpContext.Session.SetString("Username", user.UserName);
+            HttpContext.Session.SetString("Role", user.Role.ToString());
+            return RedirectToAction("Index", "Home");
+        }
+
+        ViewBag.ErrorMessage = "kullanıcı adı veya şifre hatalı";//Yanlış girişde hatalı mesajı gösterir
+        return View();
+    }
+
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();//Session sonlandırılıyor
+
+        return RedirectToAction("Login", "Home");//Login safyasına yönlendiriliyor
     }
 
     public IActionResult Privacy()
     {
         return View();
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> Index(string username, string Password)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);//veritabanından kullanıcı bulunuyor
-
-        if (user == null || user.Password != Password)//kullanıcı adı ve şifre kontrol ediliyor
-        {
-            ViewBag.Message = "Kullanici adi veya sifre hatali";
-            return View();
-        }
-
-        //session başlatılıyor
-        HttpContext.Session.SetString("UserName", user.UserName);
-        HttpContext.Session.SetString("Role", user.Role.ToString());
-
-        switch (user.Role) //kullanıcı adı veya şifre yanlış değilse kullanıcı rolü kontrol ediliyor
-        {
-            case UserRole.SystemAdmin:
-                return RedirectToAction("Index", "Admin");
-            case UserRole.Manager:
-                return RedirectToAction("Index", "Manager");
-            case UserRole.Employee:
-                return RedirectToAction("Index", "Employee");
-            default:
-                return RedirectToAction("Index", "Home");
-        }
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

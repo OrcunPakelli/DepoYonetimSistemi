@@ -1,0 +1,6 @@
+<form asp-action="Login" method="post">
+    <input type="text" name="UserName" placeholder="Kullanıcı Adı" />
+    <input type="password" name="Password" placeholder="Şifre" />
+    <button type="submit">Giriş Yap</button>
+    <p style="color:red;">@ViewBag.ErrorMessage</p>
+</form>
