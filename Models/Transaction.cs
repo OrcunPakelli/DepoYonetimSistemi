@@ -1,5 +1,10 @@
 namespace DepoYonetimSistemi.Models
 {
+    public enum TransactionType
+    {
+        In,
+        Out
+    }
     //Veri tabanı için Transaction tablosu
     public class Transaction
     {
@@ -12,7 +17,7 @@ namespace DepoYonetimSistemi.Models
         public User? User { get; set; }
 
         public int Quantity { get; set; }
-        public string TransactionType { get; set; } = "IN"; //In veya Out, Default "In"
-        public DateTime CreatedAt { get; set; }
+        public TransactionType TransactionType { get; set; } = TransactionType.In; //In veya Out, Default "In"
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

@@ -13,6 +13,9 @@ namespace DepoYonetimSistemi.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<WareHouse> WareHouses { get; set; }
+        public DbSet<ProductStock> ProductStocks { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,7 +29,7 @@ namespace DepoYonetimSistemi.Data
                     UserName = "admin",
                     Password = "admin",
                     Role = UserRole.SystemAdmin,
-                    CreatedAt = new DateTime(2025,1,1)
+                    CreatedAt = new DateTime(2025, 1, 1)
                 }
             );
         }
