@@ -1,0 +1,78 @@
+@model IEnumerable<DepoYonetimSistemi.Models.Product>
+
+@{
+    ViewData["Title"] = "Ürün Kaldır";
+}
+
+<h2 class="mb-3">Ürün Kaldır</h2>
+
+<div class="row">
+    <!-- SOL KISIM -->
+    <div class="col-md-4 mb-4">
+        <form asp-action="Remove" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label class="form-label">Seri Numarası</label>
+                <input type="text" name="serialNumber" class="form-control"
+                       placeholder="Seri No" required />
+                @Html.ValidationMessage("serialNumber", null, new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Kaldırılacak Adet</label>
+                <input type="number" name="quantity" class="form-control" min="1" value="1" required />
+                @Html.ValidationMessage("quantity", null, new { @class = "text-danger" })
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-danger px-4">Stoktan Düş</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- SAĞ KISIM: CANLI ÜRÜN LİSTESİ -->
+    <div class="col-md-8">
+        <div class="table-responsive">
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>Seri No</th>
+                        <th>Ürün</th>
+                        <th>Konum</th>
+                        <th class="text-end">Stok</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        var locationText = p.Location != null
+                            ? $"{p.Location.Aisle}-{p.Location.Shelf}-{p.Location.Bin}"
+                            : "-";
+
+                        var stock = p.ProductStocks.FirstOrDefault()?.StockQuantity ?? 0;
+
+                        <tr>
+                            <td>@p.SerialNumber</td>
+                            <td>@p.Brand @p.Model</td>
+                            <td>@locationText</td>
+                            <td class="text-end">
+                                @if (stock > 0)
+                                {
+                                    @stock
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">0</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

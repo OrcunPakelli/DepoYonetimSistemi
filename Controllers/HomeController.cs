@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using DepoYonetimSistemi.Models;
 using DepoYonetimSistemi.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace DepoYonetimSistemi.Controllers;
 
@@ -26,7 +27,23 @@ public class HomeController : Controller
             return RedirectToAction("Login", "Home");//Login sayfasına yönlendiriliyor
         }
 
-        return View();
+        var products = _context.Products
+            .Include(p => p.Location)
+            .Include(p => p.ProductCpus)
+                .ThenInclude(pc => pc.Cpu)
+            .Include(p => p.ProductGpus)
+                .ThenInclude(pg => pg.Gpu)
+            .Include(p => p.ProductRams)
+                .ThenInclude(pr => pr.Ram)
+            .Include(p => p.ProductStorages)
+                .ThenInclude(ps => ps.Storage)
+            .Include(p => p.ProductScreens)
+                .ThenInclude(psc => psc.Screen)
+            .Include(p => p.ProductStocks)
+                .ThenInclude(ps => ps.Warehouse)
+            .ToList();
+
+        return View(products);
     }
 
     public IActionResult Login()

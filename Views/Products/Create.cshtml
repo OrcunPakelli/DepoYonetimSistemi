@@ -1,0 +1,184 @@
+@model DepoYonetimSistemi.Models.Product
+
+@{
+    ViewData["Title"] = "Yeni Ürün Ekle";
+}
+
+<h2 class="mb-3">Yeni Ürün Ekle</h2>
+
+<form asp-action="Create" method="post">
+
+    <!-- Marka -->
+    <div class="form-group mb-3">
+        <label asp-for="Brand" class="form-label">Marka</label>
+        <input asp-for="Brand" class="form-control" placeholder="Örn: ASUS" required />
+    </div>
+
+    <!-- Model -->
+    <div class="form-group mb-3">
+        <label asp-for="Model" class="form-label">Model</label>
+        <input asp-for="Model" class="form-control" placeholder="Örn: ROG Strix" required />
+    </div>
+
+
+    <!-- Depo + Lokasyon -->
+    <h5 class="mt-4 mb-2 fw-bold">Depo Konumu</h5>
+
+    <div class="row">
+
+        <!-- Depo -->
+        <div class="form-group mb-3 col-md-3">
+            <label class="form-label">Depo</label>
+            <select name="warehouseId" class="form-select" required>
+                <option value="">-- Depo Seçin --</option>
+                @foreach (var w in ViewBag.Warehouses)
+                {
+                    <option value="@w.WarehouseId">@w.WarehouseName</option>
+                }
+            </select>
+        </div>
+
+        <!-- Aisle -->
+        <div class="form-group mb-3 col-md-3">
+            <label class="form-label">Koridor</label>
+            <select name="aisle" class="form-select" required>
+                <option value="">-- Koridor Seçin --</option>
+                @foreach (var a in ViewBag.Aisles)
+                {
+                    <option value="@a">@a</option>
+                }
+            </select>
+        </div>
+
+        <!-- Shelf -->
+        <div class="form-group mb-3 col-md-3">
+            <label class="form-label">Raf</label>
+            <select name="shelf" class="form-select">
+                <option value="">-- Raf Seçin --</option>
+                @foreach(var s in ViewBag.Shelves){
+                    <option value="@s">@s</option>
+                }
+            </select>
+        </div>
+
+        <!-- Bin -->
+        <div class="form-group mb-3 col-md-3">
+            <label class="form-label">Bölme</label>
+            <select name="bin" class="form-select">
+                <option value="">-- Bölme Seçin --</option>
+                @foreach(var b in ViewBag.Bins)
+                {
+                    <option value="@b">@b</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group mb-3 col-md-3">
+            <label class="form label">Adet</label>
+            <input type="number" name="stock" class="form-group" min="1" value="1" required>
+        </div>
+
+    </div>
+
+    <hr class="my-4" />
+
+    <!-- CPU Listesi -->
+    <div class="form-group mb-3">
+        <label class="form-label fw-bold">CPU Seçin</label>
+        <div class="row g-2">
+            @foreach (var cpu in ViewBag.Cpus)
+            {
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selectedCpuIds" value="@cpu.CpuId"
+                            id="cpu_@cpu.CpuId" />
+                        <label class="form-check-label" for="cpu_@cpu.CpuId">
+                            @cpu.Model (@cpu.Cores Çekirdek)
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- GPU Listesi -->
+    <div class="form-group mb-3">
+        <label class="form-label fw-bold">GPU Seçin</label>
+        <div class="row g-2">
+            @foreach (var gpu in ViewBag.Gpus)
+            {
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selectedGpuIds" value="@gpu.GpuId"
+                            id="gpu_@gpu.GpuId" />
+                        <label class="form-check-label" for="gpu_@gpu.GpuId">
+                            @gpu.Model (@gpu.Memory GB)
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- RAM Listesi -->
+    <div class="form-group mb-3">
+        <label class="form-label fw-bold">RAM Seçin</label>
+        <div class="row g-2">
+            @foreach (var ram in ViewBag.Rams)
+            {
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selectedRamIds" value="@ram.RamId"
+                            id="ram_@ram.RamId" />
+                        <label class="form-check-label" for="ram_@ram.RamId">
+                            @ram.Model (@ram.SizeGB GB)
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Storage Listesi -->
+    <div class="form-group mb-3">
+        <label class="form-label fw-bold">Depolama Seçin</label>
+        <div class="row g-2">
+            @foreach (var storage in ViewBag.Storages)
+            {
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selectedStorageIds" value="@storage.StorageId"
+                            id="storage_@storage.StorageId" />
+                        <label class="form-check-label" for="storage_@storage.StorageId">
+                            @storage.Model (@storage.CapacityGB GB, @storage.Type)
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Screen Listesi -->
+    <div class="form-group mb-4">
+        <label class="form-label fw-bold">Ekran Seçin</label>
+        <div class="row g-2">
+            @foreach (var screen in ViewBag.Screens)
+            {
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selectedScreenIds" value="@screen.ScreenId"
+                            id="screen_@screen.ScreenId" />
+                        <label class="form-check-label" for="screen_@screen.ScreenId">
+                            (@screen.SizeInches inç, @screen.Resolution)
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-success px-4">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary px-4">İptal</a>
+    </div>
+</form>

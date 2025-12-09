@@ -26,8 +26,21 @@
                         <i class="bi bi-person-circle"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <!--Butonlar-->
                         <li>
-                            <a class="dropdown-item" asp-asp-controller="Home" asp-action="Logout">Çıkış Yap</a>
+                            <a class="dropdown-item" asp-controller="Products" asp-action="Create">Ürün Ekle</a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" asp-controller="Products" asp-action="Remove">Ürün Çıkar</a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" asp-controller="Transactions" asp-action="Index">Log</a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" asp-controller="Home" asp-action="Logout">Çıkış Yap</a>
                         </li>
                     </ul>
                 </div>

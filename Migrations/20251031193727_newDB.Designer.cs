@@ -4,6 +4,7 @@ using DepoYonetimSistemi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DepoYonetimSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251031193727_newDB")]
+    partial class newDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,23 @@ namespace DepoYonetimSistemi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("DepoYonetimSistemi.Models.Brand", b =>
+                {
+                    b.Property<int>("BrandId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BrandId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BrandId");
+
+                    b.ToTable("Brand");
+                });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Cpu", b =>
                 {
@@ -53,28 +73,6 @@ namespace DepoYonetimSistemi.Migrations
                     b.HasKey("CpuId");
 
                     b.ToTable("Cpus");
-
-                    b.HasData(
-                        new
-                        {
-                            CpuId = 1,
-                            BaseClockGHz = 2.5,
-                            BoostClockGHz = 4.4000000000000004,
-                            Cores = 6,
-                            Manufacturer = "Intel",
-                            Model = "Core i5-12400F",
-                            Threads = 12
-                        },
-                        new
-                        {
-                            CpuId = 2,
-                            BaseClockGHz = 3.7000000000000002,
-                            BoostClockGHz = 4.5999999999999996,
-                            Cores = 6,
-                            Manufacturer = "AMD",
-                            Model = "Ryzen 5 5600X",
-                            Threads = 12
-                        });
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Gpu", b =>
@@ -100,22 +98,6 @@ namespace DepoYonetimSistemi.Migrations
                     b.HasKey("GpuId");
 
                     b.ToTable("Gpus");
-
-                    b.HasData(
-                        new
-                        {
-                            GpuId = 1,
-                            Manufacturer = "NVIDIA",
-                            Memory = "12GB GDDR6",
-                            Model = "RTX 3060"
-                        },
-                        new
-                        {
-                            GpuId = 2,
-                            Manufacturer = "AMD",
-                            Memory = "8GB GDDR6",
-                            Model = "RX 6600 XT"
-                        });
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Location", b =>
@@ -141,36 +123,6 @@ namespace DepoYonetimSistemi.Migrations
                     b.HasKey("LocationId");
 
                     b.ToTable("Locations");
-
-                    b.HasData(
-                        new
-                        {
-                            LocationId = 1,
-                            Aisle = "A",
-                            Bin = "01",
-                            Shelf = "1"
-                        },
-                        new
-                        {
-                            LocationId = 2,
-                            Aisle = "A",
-                            Bin = "05",
-                            Shelf = "2"
-                        },
-                        new
-                        {
-                            LocationId = 3,
-                            Aisle = "B",
-                            Bin = "02",
-                            Shelf = "1"
-                        },
-                        new
-                        {
-                            LocationId = 4,
-                            Aisle = "C",
-                            Bin = "04",
-                            Shelf = "3"
-                        });
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Product", b =>
@@ -181,16 +133,14 @@ namespace DepoYonetimSistemi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
-                    b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("BrandId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ProductModelId")
+                        .HasColumnType("int");
 
                     b.Property<string>("SerialNumber")
                         .IsRequired()
@@ -198,7 +148,11 @@ namespace DepoYonetimSistemi.Migrations
 
                     b.HasKey("ProductId");
 
+                    b.HasIndex("BrandId");
+
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("ProductModelId");
 
                     b.ToTable("Products");
                 });
@@ -233,6 +187,28 @@ namespace DepoYonetimSistemi.Migrations
                     b.ToTable("ProductGpus");
                 });
 
+            modelBuilder.Entity("DepoYonetimSistemi.Models.ProductModel", b =>
+                {
+                    b.Property<int>("ProductModelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductModelId"));
+
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductModelId");
+
+                    b.HasIndex("BrandId");
+
+                    b.ToTable("ProductModel");
+                });
+
             modelBuilder.Entity("DepoYonetimSistemi.Models.ProductRam", b =>
                 {
                     b.Property<int>("ProductId")
@@ -265,16 +241,27 @@ namespace DepoYonetimSistemi.Migrations
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.ProductStock", b =>
                 {
-                    b.Property<int>("ProductId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("WarehouseId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
-                    b.HasKey("ProductId", "WarehouseId");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("WarehouseId");
 
@@ -304,14 +291,6 @@ namespace DepoYonetimSistemi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RamId"));
 
-                    b.Property<string>("Manufacturer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("SizeGB")
                         .HasColumnType("int");
 
@@ -325,26 +304,6 @@ namespace DepoYonetimSistemi.Migrations
                     b.HasKey("RamId");
 
                     b.ToTable("Rams");
-
-                    b.HasData(
-                        new
-                        {
-                            RamId = 1,
-                            Manufacturer = "Corsair",
-                            Model = "Vengeance LPX",
-                            SizeGB = 16,
-                            SpeedMHz = 3200,
-                            Type = "DDR4"
-                        },
-                        new
-                        {
-                            RamId = 2,
-                            Manufacturer = "Kingston",
-                            Model = "Fury Beast",
-                            SizeGB = 32,
-                            SpeedMHz = 3600,
-                            Type = "DDR4"
-                        });
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Screen", b =>
@@ -371,24 +330,6 @@ namespace DepoYonetimSistemi.Migrations
                     b.HasKey("ScreenId");
 
                     b.ToTable("Screens");
-
-                    b.HasData(
-                        new
-                        {
-                            ScreenId = 1,
-                            PanelType = "IPS",
-                            RefreshRate = 60,
-                            Resolution = "3840x2160",
-                            SizeInches = 27.0
-                        },
-                        new
-                        {
-                            ScreenId = 2,
-                            PanelType = "IPS",
-                            RefreshRate = 165,
-                            Resolution = "1920x1080",
-                            SizeInches = 24.0
-                        });
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Storage", b =>
@@ -402,11 +343,7 @@ namespace DepoYonetimSistemi.Migrations
                     b.Property<int>("CapacityGB")
                         .HasColumnType("int");
 
-                    b.Property<string>("Manufacturer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Model")
+                    b.Property<string>("Interface")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -417,24 +354,6 @@ namespace DepoYonetimSistemi.Migrations
                     b.HasKey("StorageId");
 
                     b.ToTable("Storages");
-
-                    b.HasData(
-                        new
-                        {
-                            StorageId = 1,
-                            CapacityGB = 1000,
-                            Manufacturer = "Samsung",
-                            Model = "970 EVO Plus",
-                            Type = "NVMe SSD"
-                        },
-                        new
-                        {
-                            StorageId = 2,
-                            CapacityGB = 1000,
-                            Manufacturer = "Seagate",
-                            Model = "Barracuda",
-                            Type = "HDD"
-                        });
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Transaction", b =>
@@ -528,11 +447,23 @@ namespace DepoYonetimSistemi.Migrations
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Product", b =>
                 {
+                    b.HasOne("DepoYonetimSistemi.Models.Brand", null)
+                        .WithMany("Products")
+                        .HasForeignKey("BrandId");
+
                     b.HasOne("DepoYonetimSistemi.Models.Location", "Location")
                         .WithMany("Products")
                         .HasForeignKey("LocationId");
 
+                    b.HasOne("DepoYonetimSistemi.Models.ProductModel", "ProductModel")
+                        .WithMany("Products")
+                        .HasForeignKey("ProductModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Location");
+
+                    b.Navigation("ProductModel");
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.ProductCpu", b =>
@@ -571,6 +502,17 @@ namespace DepoYonetimSistemi.Migrations
                     b.Navigation("Gpu");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DepoYonetimSistemi.Models.ProductModel", b =>
+                {
+                    b.HasOne("DepoYonetimSistemi.Models.Brand", "Brand")
+                        .WithMany()
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.ProductRam", b =>
@@ -668,6 +610,11 @@ namespace DepoYonetimSistemi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DepoYonetimSistemi.Models.Brand", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("DepoYonetimSistemi.Models.Cpu", b =>
                 {
                     b.Navigation("ProductCpus");
@@ -698,6 +645,11 @@ namespace DepoYonetimSistemi.Migrations
                     b.Navigation("ProductStorages");
 
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("DepoYonetimSistemi.Models.ProductModel", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.Ram", b =>

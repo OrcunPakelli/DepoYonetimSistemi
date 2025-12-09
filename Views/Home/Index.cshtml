@@ -1,1 +1,100 @@
-﻿<h1>Giriş yaptın</h1>
+﻿@model IEnumerable<DepoYonetimSistemi.Models.Product>
+
+<h2 class="mb-3">Ürün Listesi</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Marka</th>
+            <th>Model</th>
+            <th>Seri No</th>
+            <th>Depo</th>
+            <th>Konum</th>
+            <th>CPU</th>
+            <th>GPU</th>
+            <th>RAM</th>
+            <th>Depolama</th>
+            <th>Ekran</th>
+            <th>Stok</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Brand</td>
+            <td>@item.Model</td>
+            <td>@item.SerialNumber</td>
+
+            <!-- Depo -->
+            <td>
+                @if (item.ProductStocks.Any())
+                {
+                    foreach (var st in item.ProductStocks)
+                    {
+                        <div>@st.Warehouse.WarehouseName</div>
+                    }
+                }
+                else { <span class="text-muted">-</span> }
+            </td>
+
+            <!-- Konum -->
+            <td>
+                @if (item.Location != null)
+                {
+                    <div>Koridor: @item.Location.Aisle</div>
+                    <div>Raf: @item.Location.Shelf</div>
+                    <div>Kutu: @item.Location.Bin</div>
+                }
+                else { <span class="text-muted">-</span> }
+            </td>
+
+            <!-- CPU -->
+            <td>
+                @foreach (var cpu in item.ProductCpus)
+                {
+                    <div>@cpu.Cpu.Manufacturer @cpu.Cpu.Model</div>
+                }
+            </td>
+
+            <!-- GPU -->
+            <td>
+                @foreach (var gpu in item.ProductGpus)
+                {
+                    <div>@gpu.Gpu.Manufacturer @gpu.Gpu.Model</div>
+                }
+            </td>
+
+            <!-- RAM -->
+            <td>
+                @foreach (var ram in item.ProductRams)
+                {
+                    <div>@ram.Ram.Manufacturer @ram.Ram.Model - @ram.Ram.SizeGB GB</div>
+                }
+            </td>
+
+            <!-- Depolama -->
+            <td>
+                @foreach (var sto in item.ProductStorages)
+                {
+                    <div>@sto.Storage.Manufacturer @sto.Storage.Model - @sto.Storage.CapacityGB GB @sto.Storage.Type</div>
+                }
+            </td>
+
+            <!-- Ekran -->
+            <td>
+                @foreach (var sc in item.ProductScreens)
+                {
+                    <div>@sc.Screen.SizeInches" - @sc.Screen.Resolution</div>
+                }
+            </td>
+
+            <!-- Stok -->
+            <td>
+                @item.ProductStocks.Sum(s => s.StockQuantity)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
