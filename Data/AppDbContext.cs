@@ -38,6 +38,9 @@ namespace DepoYonetimSistemi.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<ProductStock>()
+               .ToTable(tb => tb.HasTrigger("trg_DeleteProductWhenAllStockZero"));
+
             // Product - Warehouse many-to-many
             modelBuilder.Entity<ProductStock>()
                 .HasKey(ps => new { ps.ProductId, ps.WarehouseId });
@@ -128,7 +131,7 @@ namespace DepoYonetimSistemi.Data
                 .WithMany(p => p.Transactions)
                 .HasForeignKey(t => t.ProductId);
 
-            
+
 
             //Seed Data
             modelBuilder.Entity<User>().HasData

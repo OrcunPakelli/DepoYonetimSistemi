@@ -1,7 +1,252 @@
 ﻿@model IEnumerable<DepoYonetimSistemi.Models.Product>
 
+@{
+    // Query stringden gelen değerleri array'e dönüştürme
+    string?[] selectedCpuIds        = Context.Request.Query["cpuId"].ToArray();
+    string?[] selectedGpuIds        = Context.Request.Query["gpuId"].ToArray();
+    string?[] selectedRamSizes      = Context.Request.Query["ramSize"].ToArray();
+    string?[] selectedRamTypes      = Context.Request.Query["ramType"].ToArray();
+    string?[] selectedStorCaps      = Context.Request.Query["storageCapacity"].ToArray();
+    string?[] selectedStorTypes     = Context.Request.Query["storageType"].ToArray();
+    string?[] selectedScreenSizes   = Context.Request.Query["screenSize"].ToArray();
+    string?[] selectedScreenReses   = Context.Request.Query["screenResolution"].ToArray();
+    string?[] selectedWarehouseIds  = Context.Request.Query["warehouseId"].ToArray();
+}
+
+
+<button type="button" class="btn btn-secondary openbtn" onclick="openNav()">
+    Filtrele
+</button>
+<!-- Sidepanel  -->
+<div id="Sidepanel" class="sidepanel">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+    <form asp-action="Index" method="get" class="p-3 text-white">
+
+        <h4 class="mb-3">Filtreler</h4>
+        <!-- Seri No -->
+        <div class="mb-3">
+            <label class="form-label">Seri No</label>
+            <input type="text" name="serialNumber" class="form-control"
+                value="@(Context.Request.Query["serialNumber"])" />
+        </div>
+
+        <!-- Marka -->
+        <div class="mb-3">
+            <label class="form-label">Marka</label>
+            <input type="text" name="brand" class="form-control" value="@(Context.Request.Query["brand"])" />
+        </div>
+
+        <!-- Model -->
+        <div class="mb-3">
+            <label class="form-label">Model</label>
+            <input type="text" name="model" class="form-control" value="@(Context.Request.Query["model"])" />
+        </div>
+
+        <!-- DEPO-->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Depo</label>
+
+            @foreach (var wh in ViewBag.Warehouses)
+            {
+                bool isChecked = Array.IndexOf(selectedWarehouseIds, wh.WarehouseId.ToString()) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="warehouseId"
+                           value="@wh.WarehouseId"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">
+                        @wh.WarehouseName
+                    </label>
+                </div>
+            }
+        </div>
+        <!-- CPU -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">CPU</label>
+
+            @foreach (var cpu in ViewBag.Cpus)
+            {
+                bool isChecked = Array.IndexOf(selectedCpuIds, cpu.CpuId.ToString()) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="cpuId"
+                           value="@cpu.CpuId"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">
+                        @cpu.Manufacturer @cpu.Model (@cpu.Cores çekirdek)
+                    </label>
+                </div>
+            }
+        </div>
+
+        <!-- GPU -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">GPU</label>
+
+            @foreach (var gpu in ViewBag.Gpus)
+            {
+                bool isChecked = Array.IndexOf(selectedGpuIds, gpu.GpuId.ToString()) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="gpuId"
+                           value="@gpu.GpuId"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">
+                        @gpu.Manufacturer @gpu.Model (@gpu.Memory)
+                    </label>
+                </div>
+            }
+        </div>
+
+        <!-- RAM TİPİ -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">RAM Tipi</label>
+
+            @foreach (var type in ViewBag.RamTypes)
+            {
+                bool isChecked = Array.IndexOf(selectedRamTypes, (string?)type) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="ramType"
+                           value="@type"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">
+                        @type
+                    </label>
+                </div>
+            }
+        </div>
+
+        <!-- RAM BOYUTU -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">RAM Boyutu (GB)</label>
+
+            @foreach (var size in ViewBag.RamSizes)
+            {
+                bool isChecked = Array.IndexOf(selectedRamSizes, size.ToString()) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="ramSize"
+                           value="@size"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">
+                        @size GB
+                    </label>
+                </div>
+            }
+        </div>
+
+
+        <!-- DEPOLAMA TİPİ -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Depolama Tipi</label>
+
+            @foreach (var t in ViewBag.StorageTypes)
+            {
+                bool isChecked = Array.IndexOf(selectedStorTypes, (string?)t) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="storageType"
+                           value="@t"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">@t</label>
+                </div>
+            }
+        </div>
+
+        <!-- DEPOLAMA KAPASİTESİ -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Depolama Kapasitesi</label>
+
+            @foreach (var cap in ViewBag.StorageCapacities)
+            {
+                bool isChecked = Array.IndexOf(selectedStorCaps, cap.ToString()) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="storageCapacity"
+                           value="@cap"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">@cap GB</label>
+                </div>
+            }
+        </div>
+
+        <!-- EKRAN BOYUTU -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Ekran Boyutu (inch)</label>
+
+            @foreach (var s in ViewBag.ScreenSizes)
+            {
+                bool isChecked = Array.IndexOf(selectedScreenSizes, s.ToString()) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="screenSize"
+                           value="@s"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">@s"</label>
+                </div>
+            }
+        </div>
+
+        <!-- EKRAN ÇÖZÜNÜRLÜĞÜ -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Çözünürlük</label>
+
+            @foreach (var res in ViewBag.ScreenResolutions)
+            {
+                bool isChecked = Array.IndexOf(selectedScreenReses, (string?)res) >= 0;
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="screenResolution"
+                           value="@res"
+                           @(isChecked ? "checked" : "") />
+
+                    <label class="form-check-label">@res</label>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary w-50">Filtrele</button>
+
+            <a asp-action="Index" class="btn btn-outline-light w-50">
+                Temizle
+            </a>
+        </div>
+
+    </form>
+</div>
+
 <h2 class="mb-3">Ürün Listesi</h2>
 
+<!-- Ürün tablosu -->
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
         <tr>
@@ -20,81 +265,97 @@
     </thead>
 
     <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.Brand</td>
-            <td>@item.Model</td>
-            <td>@item.SerialNumber</td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Brand</td>
+                <td>@item.Model</td>
+                <td>@item.SerialNumber</td>
 
-            <!-- Depo -->
-            <td>
-                @if (item.ProductStocks.Any())
-                {
-                    foreach (var st in item.ProductStocks)
+                <!-- Depo -->
+                <td>
+                    @if (item.ProductStocks.Any())
                     {
-                        <div>@st.Warehouse.WarehouseName</div>
+                        foreach (var st in item.ProductStocks)
+                        {
+                            <div>@st.Warehouse.WarehouseName</div>
+                        }
                     }
-                }
-                else { <span class="text-muted">-</span> }
-            </td>
+                    else
+                    {
 
-            <!-- Konum -->
-            <td>
-                @if (item.Location != null)
-                {
-                    <div>Koridor: @item.Location.Aisle</div>
-                    <div>Raf: @item.Location.Shelf</div>
-                    <div>Kutu: @item.Location.Bin</div>
-                }
-                else { <span class="text-muted">-</span> }
-            </td>
+                        <span class="text-muted">-</span>
+                    }
+                </td>
 
-            <!-- CPU -->
-            <td>
-                @foreach (var cpu in item.ProductCpus)
-                {
-                    <div>@cpu.Cpu.Manufacturer @cpu.Cpu.Model</div>
-                }
-            </td>
+                <!-- Konum -->
+                <td>
+                    @if (item.Location != null)
+                    {
+                        <div>Koridor: @item.Location.Aisle</div>
+                        <div>Raf: @item.Location.Shelf</div>
+                        <div>Kutu: @item.Location.Bin</div>
+                    }
+                    else
+                    {
 
-            <!-- GPU -->
-            <td>
-                @foreach (var gpu in item.ProductGpus)
-                {
-                    <div>@gpu.Gpu.Manufacturer @gpu.Gpu.Model</div>
-                }
-            </td>
+                        <span class="text-muted">-</span>
+                    }
+                </td>
 
-            <!-- RAM -->
-            <td>
-                @foreach (var ram in item.ProductRams)
-                {
-                    <div>@ram.Ram.Manufacturer @ram.Ram.Model - @ram.Ram.SizeGB GB</div>
-                }
-            </td>
+                <!-- CPU -->
+                <td>
+                    @foreach (var cpu in item.ProductCpus)
+                    {
+                        <div>@cpu.Cpu.Manufacturer @cpu.Cpu.Model</div>
+                    }
+                </td>
 
-            <!-- Depolama -->
-            <td>
-                @foreach (var sto in item.ProductStorages)
-                {
-                    <div>@sto.Storage.Manufacturer @sto.Storage.Model - @sto.Storage.CapacityGB GB @sto.Storage.Type</div>
-                }
-            </td>
+                <!-- GPU -->
+                <td>
+                    @foreach (var gpu in item.ProductGpus)
+                    {
+                        <div>@gpu.Gpu.Manufacturer @gpu.Gpu.Model</div>
+                    }
+                </td>
 
-            <!-- Ekran -->
-            <td>
-                @foreach (var sc in item.ProductScreens)
-                {
-                    <div>@sc.Screen.SizeInches" - @sc.Screen.Resolution</div>
-                }
-            </td>
+                <!-- RAM -->
+                <td>
+                    @foreach (var ram in item.ProductRams)
+                    {
+                        <div>@ram.Ram.Manufacturer @ram.Ram.Model - @ram.Ram.SizeGB GB</div>
+                    }
+                </td>
 
-            <!-- Stok -->
-            <td>
-                @item.ProductStocks.Sum(s => s.StockQuantity)
-            </td>
-        </tr>
-    }
+                <!-- Depolama -->
+                <td>
+                    @foreach (var sto in item.ProductStorages)
+                    {
+                        <div>@sto.Storage.Manufacturer @sto.Storage.Model - @sto.Storage.CapacityGB GB @sto.Storage.Type</div>
+                    }
+                </td>
+
+                <!-- Ekran -->
+                <td>
+                    @foreach (var sc in item.ProductScreens)
+                    {
+                        <div>@sc.Screen.SizeInches" - @sc.Screen.Resolution</div>
+                    }
+                </td>
+
+                <!-- Stok -->
+                <td>
+                    @item.ProductStocks.Sum(s => s.StockQuantity)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/homeindex.css" />
+}
+
+@section Scripts {
+    <script src="~/js/site.js"></script>
+}

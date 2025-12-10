@@ -18,30 +18,175 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(
+    string? brand,
+    string? model,
+    string? serialNumber,
+    int? locationId,
+    List<int>? cpuId,
+    List<int>? gpuId,
+    List<int>? ramSize,
+    List<string>? ramType,
+    List<int>? storageCapacity,
+    List<string>? storageType,
+    List<double>? screenSize,
+    List<string>? screenResolution,
+    List<int>? warehouseId
+    )
     {
-        //Eğer kullanıcı giriş yapmamışsa Index sayfası yerine Login sayfasına yönlendiriliyor
-        var username = HttpContext.Session.GetString("Username");//Sessiondan kullanıcı adı bilgisi alınıyor
-        if (string.IsNullOrEmpty(username))//Giriş yapılmış mı kontrol ediliyor
+        // Kullanıcı girişi kontrolü
+        var username = HttpContext.Session.GetString("Username");
+        if (string.IsNullOrEmpty(username))
         {
-            return RedirectToAction("Login", "Home");//Login sayfasına yönlendiriliyor
+            return RedirectToAction("Login", "Home");
         }
 
-        var products = _context.Products
-            .Include(p => p.Location)
-            .Include(p => p.ProductCpus)
-                .ThenInclude(pc => pc.Cpu)
-            .Include(p => p.ProductGpus)
-                .ThenInclude(pg => pg.Gpu)
-            .Include(p => p.ProductRams)
-                .ThenInclude(pr => pr.Ram)
-            .Include(p => p.ProductStorages)
-                .ThenInclude(ps => ps.Storage)
-            .Include(p => p.ProductScreens)
-                .ThenInclude(psc => psc.Screen)
-            .Include(p => p.ProductStocks)
-                .ThenInclude(ps => ps.Warehouse)
+        // --- DROPDOWN VERİLERİ ---
+
+        // Lokasyon (koridor/raf/kutu)
+        ViewBag.Locations = _context.Locations.ToList();
+
+        // CPU / GPU listeleri
+        ViewBag.Cpus = _context.Cpus.ToList();
+        ViewBag.Gpus = _context.Gpus.ToList();
+
+        // RAM boyutları ve tipleri
+        ViewBag.RamSizes = _context.Rams
+            .Select(r => r.SizeGB)
+            .Distinct()
+            .OrderBy(x => x)
             .ToList();
+
+        ViewBag.RamTypes = _context.Rams
+            .Select(r => r.Type)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        // Depolama kapasiteleri ve tipleri
+        ViewBag.StorageCapacities = _context.Storages
+            .Select(s => s.CapacityGB)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        ViewBag.StorageTypes = _context.Storages
+            .Select(s => s.Type)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        // Ekran boyutları ve çözünürlükleri
+        ViewBag.ScreenSizes = _context.Screens
+            .Select(s => s.SizeInches)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        ViewBag.ScreenResolutions = _context.Screens
+            .Select(s => s.Resolution)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        // Depolar
+        ViewBag.Warehouses = _context.WareHouses.ToList();
+
+        // --- ÜRÜN SORGUSU ---
+
+        var query = _context.Products
+            .Include(p => p.Location)
+            .Include(p => p.ProductCpus).ThenInclude(pc => pc.Cpu)
+            .Include(p => p.ProductGpus).ThenInclude(pg => pg.Gpu)
+            .Include(p => p.ProductRams).ThenInclude(pr => pr.Ram)
+            .Include(p => p.ProductStorages).ThenInclude(ps => ps.Storage)
+            .Include(p => p.ProductScreens).ThenInclude(psc => psc.Screen)
+            .Include(p => p.ProductStocks).ThenInclude(ps => ps.Warehouse)
+            .AsQueryable();
+
+
+        query = query.Where(p => p.ProductStocks.Any(ps => ps.StockQuantity > 0));
+        // Marka
+        if (!string.IsNullOrWhiteSpace(brand))
+            query = query.Where(p => p.Brand.Contains(brand));
+
+        // Model
+        if (!string.IsNullOrWhiteSpace(model))
+            query = query.Where(p => p.Model.Contains(model));
+
+        // Seri No
+        if (!string.IsNullOrWhiteSpace(serialNumber))
+            query = query.Where(p => p.SerialNumber.Contains(serialNumber));
+
+        // Lokasyon
+        if (locationId.HasValue)
+            query = query.Where(p => p.LocationId == locationId.Value);
+
+        // --- TEKNİK ÖZELLİK FİLTRELERİ ---
+
+        // CPU
+        if (cpuId != null && cpuId.Any())
+        {
+            query = query.Where(p =>
+                p.ProductCpus.Any(pc => cpuId.Contains(pc.CpuId)));
+        }
+        // GPU
+        if (gpuId != null && gpuId.Any())
+        {
+            query = query.Where(p =>
+                p.ProductGpus.Any(pg => gpuId.Contains(pg.GpuId)));
+        }
+
+        // RAM boyutu
+        if (ramSize != null && ramSize.Any())
+        {
+            query = query.Where(p =>
+                p.ProductRams.Any(pr => ramSize.Contains(pr.Ram.SizeGB)));
+        }
+
+        // RAM tipi
+        if (ramType != null && ramType.Any())
+        {
+            query = query.Where(p =>
+                p.ProductRams.Any(pr => ramType.Contains(pr.Ram.Type)));
+        }
+        // Depolama kapasitesif
+        if (storageCapacity != null && storageCapacity.Any())
+        {
+            query = query.Where(p =>
+                p.ProductStorages.Any(ps => storageCapacity.Contains(ps.Storage.CapacityGB)));
+        }
+
+        // Depolama tipi
+        if (storageType != null && storageType.Any())
+        {
+            query = query.Where(p =>
+                p.ProductStorages.Any(ps => storageType.Contains(ps.Storage.Type)));
+        }
+
+
+        // Ekran boyutu
+        if (screenSize != null && screenSize.Any())
+        {
+            query = query.Where(p =>
+                p.ProductScreens.Any(psc => screenSize.Contains(psc.Screen.SizeInches)));
+        }
+
+        // Ekran çözünürlüğü
+        if (screenResolution != null && screenResolution.Any())
+        {
+            query = query.Where(p =>
+                p.ProductScreens.Any(psc => screenResolution.Contains(psc.Screen.Resolution)));
+        }
+
+        // Depo (warehouse) – ürünün stoğu hangi depoda ise
+        if (warehouseId != null && warehouseId.Any())
+        {
+            query = query.Where(p =>
+                p.ProductStocks.Any(ps => warehouseId.Contains(ps.WarehouseId)));
+        }
+
+        var products = query.ToList();
 
         return View(products);
     }
