@@ -18,6 +18,19 @@ namespace DepoYonetimSistemi.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            // Kullanıcı girişi kontrolü
+            var username = HttpContext.Session.GetString("Username");
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            if (role != UserRole.SystemAdmin.ToString() && role != UserRole.Manager.ToString())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             ViewBag.Locations = _context.Locations.ToList();
             ViewBag.Cpus = _context.Cpus.ToList();
             ViewBag.Gpus = _context.Gpus.ToList();
@@ -211,6 +224,17 @@ namespace DepoYonetimSistemi.Controllers
         [HttpGet]
         public IActionResult Remove()
         {
+            // Kullanıcı girişi kontrolü
+            var username = HttpContext.Session.GetString("Username");
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            if (role != UserRole.SystemAdmin.ToString() && role != UserRole.Manager.ToString())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var products = _context.Products
                 .Include(p => p.Location)
                 .Include(p => p.ProductStocks)

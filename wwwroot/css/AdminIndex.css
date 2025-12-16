@@ -1,0 +1,46 @@
+.Table{
+    box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
+}
+
+.Table-Table {
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: normal;
+    border: none;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+    background-color: white;
+}
+
+.Table-Table th {
+    text-align: center;
+    padding: 8px;
+}
+.Table-Table td {
+    text-align: center;
+    padding: 5px;
+}
+
+.Table-Table td {
+    border-right: 1px solid #f8f8f8;
+    font-size: 12px;
+}
+
+.Table-Table thead th {
+    color: #ffffff;
+    background: #4FC3A1;
+}
+
+.Table-Table thead th:nth-child(odd) {
+    color: #ffffff;
+    background: #324960;
+}
+
+.Table-Table tr:nth-child(even) {
+    background: #F8F8F8;
+}
+.user-check{
+    text-align: center;
+}

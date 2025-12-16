@@ -1,0 +1,188 @@
+@model IEnumerable<DepoYonetimSistemi.Models.User>
+@{
+    ViewData["Title"] = "Kullanıcılar";
+}
+
+<!--Kullanıcı tablosu-->
+<div class="Table">
+    <h2 class="mb-4">Kullanıcı Listesi</h2>
+
+    <div class="Buttons">
+        <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#createUserModal">
+            <i class="fas fa-user-plus"></i> Kullanıcı Ekle
+        </button>
+
+        <button type="button" class="btn btn-danger" id="btnDeleteSelected" disabled>
+            <i class="fas fa-user-minus"></i> Seçilenleri Sil
+        </button>
+    </div>
+
+    @if (TempData["Msg"] != null)
+    {
+        <div class="alert alert-success">@TempData["Msg"]</div>
+    }
+    @if (TempData["Err"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Err"]</div>
+    }
+    <table class="Table-Table">
+        <thead>
+            <tr>
+                <th>Seç</th>
+                <th>kullanıcı Adı</th>
+                <th>Rol</th>
+                <th>Oluşturulma Tarihi</th>
+                <th></th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" class="user-check" value="@user.UserId" />
+                    </td>
+                    <td>@user.UserName</td>
+                    <td>@user.Role</td>
+                    <td>@user.CreatedAt</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-warning js-open-passmodal" data-bs-toggle="modal"
+                            data-bs-target="#changePassModal" data-userid="@user.UserId" data-username="@user.UserName">
+                            Şifre Değiştir
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Şifre değiştirme modal -->
+<div class="modal fade" id="changePassModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Şifre Değiştir</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+
+            <form asp-controller="Profile" asp-action="AdminChangePassword" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="modal-body">
+                    <input type="hidden" id="modalUserId" name="userId" />
+
+                    <div class="mb-2 text-muted">
+                        Kullanıcı: <b id="modalUsername"></b>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Yeni Şifre</label>
+                        <input type="password" class="form-control" name="newPassword" required minlength="4" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Yeni Şifre (Tekrar)</label>
+                        <input type="password" class="form-control" name="confirmPassword" required minlength="4" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Kullanıcı Oluşturulma modal -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Kullanıcı Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-controller="Profile" asp-action="CreateUser" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Kullanıcı Adı</label>
+                        <input name="userName" class="form-control" required minlength="3" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Şifre</label>
+                        <input name="password" type="password" class="form-control" required minlength="4" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Şifre (Tekrar)</label>
+                        <input name="confirmPassword" type="password" class="form-control" required minlength="4" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Rol</label>
+                        <select name="userRole" class="form-select">
+                            <option value="@((int)UserRole.Employee)">Çalışan</option>
+                            <option value="@((int)UserRole.Manager)">Manager</option>
+                            <option value="@((int)UserRole.SystemAdmin)">SystemAdmin</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-success">Kaydet</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("click", function (e) {
+            const btn = e.target.closest(".js-open-passmodal");
+            if (!btn) return;
+
+            document.getElementById("modalUserId").value = btn.getAttribute("data-userid");
+            document.getElementById("modalUsername").textContent = btn.getAttribute("data-username");
+        });
+
+        const checkAll = document.getElementById("checkAll");
+        const deleteBtn = document.getElementById("btnDeleteSelected");
+
+        function toggleDeleteBtn() {
+            const anyChecked = document.querySelectorAll(".user-check:checked").length > 0;
+            deleteBtn.disabled = !anyChecked;
+        }
+
+        checkAll?.addEventListener("change", function () {
+            document.querySelectorAll(".user-check").forEach(cb => {
+                cb.checked = checkAll.checked;
+            });
+            toggleDeleteBtn();
+        });
+
+        document.addEventListener("change", function (e) {
+            if (e.target.classList.contains("user-check")) {
+                toggleDeleteBtn();
+            }
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AdminIndex.css" />
+}

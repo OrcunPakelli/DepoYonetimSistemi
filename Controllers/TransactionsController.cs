@@ -1,6 +1,7 @@
 using DepoYonetimSistemi.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DepoYonetimSistemi.Models;
 
 namespace DepoYonetimSistemi.Controllers
 {
@@ -15,6 +16,18 @@ namespace DepoYonetimSistemi.Controllers
 
         public IActionResult Index()
         {
+            // Kullanıcı girişi kontrolü
+            var username = HttpContext.Session.GetString("Username");
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            if (role != UserRole.SystemAdmin.ToString() && role != UserRole.Manager.ToString())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var logs = _context.Transactions
                 .Include(t => t.User)
                 .Include(t => t.Product)
