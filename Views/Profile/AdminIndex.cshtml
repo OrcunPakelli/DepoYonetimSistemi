@@ -3,18 +3,26 @@
     ViewData["Title"] = "Kullanıcılar";
 }
 
+<form id="deleteSelectedForm" asp-controller="Profile" asp-action="DeleteSelectedUsers" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ids" id="selectedIds" />
+</form>
+
 <!--Kullanıcı tablosu-->
 <div class="Table">
-    <h2 class="mb-4">Kullanıcı Listesi</h2>
+    <div class="TableHeader">
+        <h2 class="mb-0">Kullanıcı Listesi</h2>
 
-    <div class="Buttons">
-        <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#createUserModal">
-            <i class="fas fa-user-plus"></i> Kullanıcı Ekle
-        </button>
+        <div class="Buttons">
+            <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                <i class="fas fa-user-plus"></i> Kullanıcı Ekle
+            </button>
 
-        <button type="button" class="btn btn-danger" id="btnDeleteSelected" disabled>
-            <i class="fas fa-user-minus"></i> Seçilenleri Sil
-        </button>
+            <button type="button" class="btn btn-danger" id="btnDeleteSelected"
+                    data-bs-toggle="modal" data-bs-target="#deleteSelectedModal" disabled>
+                Seçilenleri Sil
+            </button>
+        </div>
     </div>
 
     @if (TempData["Msg"] != null)
@@ -33,7 +41,7 @@
                 <th>Rol</th>
                 <th>Oluşturulma Tarihi</th>
                 <th></th>
-                
+
             </tr>
         </thead>
         <tbody>
@@ -150,39 +158,38 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        document.addEventListener("click", function (e) {
-            const btn = e.target.closest(".js-open-passmodal");
-            if (!btn) return;
+<!-- Kullanıcı silme modal-->
+<div class="modal fade" id="deleteSelectedModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
 
-            document.getElementById("modalUserId").value = btn.getAttribute("data-userid");
-            document.getElementById("modalUsername").textContent = btn.getAttribute("data-username");
-        });
+            <div class="modal-header">
+                <h5 class="modal-title">Seçilen Kullanıcıları Sil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
-        const checkAll = document.getElementById("checkAll");
-        const deleteBtn = document.getElementById("btnDeleteSelected");
+            <div class="modal-body">
+                <p class="mb-2">
+                    <b id="selectedCount">0</b> kullanıcı silinecek. Emin misin?
+                </p>
+                <div class="text-muted small">
+                    Not: Bu işlem geri alınamaz.
+                </div>
+            </div>
 
-        function toggleDeleteBtn() {
-            const anyChecked = document.querySelectorAll(".user-check:checked").length > 0;
-            deleteBtn.disabled = !anyChecked;
-        }
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteSelected">Sil</button>
+            </div>
 
-        checkAll?.addEventListener("change", function () {
-            document.querySelectorAll(".user-check").forEach(cb => {
-                cb.checked = checkAll.checked;
-            });
-            toggleDeleteBtn();
-        });
-
-        document.addEventListener("change", function (e) {
-            if (e.target.classList.contains("user-check")) {
-                toggleDeleteBtn();
-            }
-        });
-    </script>
-}
+        </div>
+    </div>
+</div>
 
 @section Styles {
     <link rel="stylesheet" href="~/css/AdminIndex.css" />
+}
+
+@section Scripts {
+    <script src="~/js/Profile.js"></script>
 }

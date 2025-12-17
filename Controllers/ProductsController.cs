@@ -87,8 +87,16 @@ namespace DepoYonetimSistemi.Controllers
                 // Ürüne LocationId ata
                 product.LocationId = location.LocationId;
 
+                var warehouse = _context.WareHouses.FirstOrDefault(w => w.WarehouseId == warehouseId);
+
+                if (warehouse == null)
+                {
+                    ModelState.AddModelError("", "Depo bulunamadı.");
+                    return View(product);
+                }
+
                 // Seri no oluştur
-                product.SerialNumber = GenerateProductCode(product);
+                product.SerialNumber = GenerateProductCode(product, warehouse.WarehouseName, aisle, shelf, bin);
 
                 // Ürün kaydet
                 _context.Products.Add(product);
@@ -214,10 +222,25 @@ namespace DepoYonetimSistemi.Controllers
             return View(product);
         }
 
-        private string GenerateProductCode(Product product)
+        private string GenerateProductCode(Product product, string warehouse, string aisle, string shelf, string bin)
         {
-            string code = $"{product.Brand.Substring(0, 2).ToUpper()}{product.Model.Substring(0, 2).ToUpper()}{DateTime.Now:yyMMddHHmmss}";
-            return code;
+            string brandPart = product.Brand.Length >= 2
+        ? product.Brand.Substring(0, 2).ToUpper()
+        : product.Brand.ToUpper();
+
+            string modelPart = product.Model.Length >= 2
+                ? product.Model.Substring(0, 2).ToUpper()
+                : product.Model.ToUpper();
+
+            string warehousePart = warehouse.Length >= 3
+                ? warehouse.Substring(0, 3).ToUpper()
+                : warehouse.ToUpper();
+
+            string aislePart = aisle.ToUpper();
+            string shelfPart = shelf.ToUpper();
+            string binPart = bin.ToUpper();
+
+            return $"{brandPart}{modelPart}{warehousePart}{aislePart}{shelfPart}{binPart}";
         }
 
         // GET: Remove
@@ -238,6 +261,7 @@ namespace DepoYonetimSistemi.Controllers
             var products = _context.Products
                 .Include(p => p.Location)
                 .Include(p => p.ProductStocks)
+                .Where(p => p.ProductStocks.Any(ps => ps.StockQuantity > 0))
                 .ToList();
 
             return View(products);

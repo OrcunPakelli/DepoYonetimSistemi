@@ -134,5 +134,64 @@ namespace DepoYonetimSistemi.Controllers
             TempData["Msg"] = "Kullanıcı başarıyla eklendi.";
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteSelectedUsers(string ids)
+        {
+            //Login kontrol
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            //Admin kontrol
+            var role = HttpContext.Session.GetString("Role");
+            if (role != UserRole.SystemAdmin.ToString())
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (string.IsNullOrWhiteSpace(ids))
+            {
+                TempData["Err"] = "Silinecek kullanıcı seçilmedi.";
+                return RedirectToAction("Index");
+            }
+
+            var idList = ids.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => int.TryParse(s, out var x) ? x : (int?)null)
+                    .Where(x => x.HasValue)
+                    .Select(x => x!.Value)
+                    .Distinct()
+                    .ToList();
+
+            if (idList.Count == 0)
+            {
+                TempData["Err"] = "Geçersiz seçim.";
+                return RedirectToAction("Index");
+            }
+
+            //Kullanıcı kendi hesabını silemesin
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == username);
+            if (currentUser != null)
+            {
+                idList.Remove(currentUser.UserId);
+            }
+
+            var usersToDelete = _context.Users.Where(u => idList.Contains(u.UserId)).ToList();
+
+            if (usersToDelete.Count == 0)
+            {
+                TempData["Err"] = "Silinecek kullanıcı bulunamadı.";
+                return RedirectToAction("Index");
+            }
+
+            _context.Users.RemoveRange(usersToDelete);
+            _context.SaveChanges();
+
+            TempData["Msg"] = $"{usersToDelete.Count} kullanıcı silindi.";
+            return RedirectToAction("Index");
+        }
     }
 }

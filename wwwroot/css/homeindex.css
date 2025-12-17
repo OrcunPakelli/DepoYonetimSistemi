@@ -26,6 +26,13 @@ html, body {
     font-size: 18px;
 }
 
+.sidepanel h5 {
+    color: #f1f1f1;
+}
+.sidepanel div label{
+    color: #f1f1f1;
+}
+
 .sidepanel .closebtn {
     position: absolute;
     top: 10px;
