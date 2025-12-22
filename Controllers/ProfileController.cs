@@ -30,6 +30,7 @@ namespace DepoYonetimSistemi.Controllers
             //Rol kontrolü
             if (role == UserRole.SystemAdmin.ToString())
             {
+                ViewBag.warehouses = _context.WareHouses.ToList();
                 return View("AdminIndex", users);
             }
             if (role == UserRole.Manager.ToString())
@@ -191,6 +192,46 @@ namespace DepoYonetimSistemi.Controllers
             _context.SaveChanges();
 
             TempData["Msg"] = $"{usersToDelete.Count} kullanıcı silindi.";
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult AddWareHouse(string warehouse)
+        {
+            //Login kontrol
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            //Admin kontrol
+            var role = HttpContext.Session.GetString("Role");
+            if (role != UserRole.SystemAdmin.ToString())
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (string.IsNullOrWhiteSpace(warehouse))
+            {
+                TempData["Err"] = "Depo Adı boş olamaz";
+                return RedirectToAction("Index");
+            }
+
+            bool exists = _context.WareHouses.Any(wr => wr.WarehouseName == warehouse);
+
+            if (exists)
+            {
+                TempData["Err"] = "Bu depo zaten mevcut";
+                return RedirectToAction("Index");
+            }
+
+            _context.WareHouses.Add(new WareHouse
+            {
+                WarehouseName = warehouse.Trim(),
+            });
+
+            _context.SaveChanges();
+            TempData["Msg"] = "Depo Eklendi";
             return RedirectToAction("Index");
         }
     }

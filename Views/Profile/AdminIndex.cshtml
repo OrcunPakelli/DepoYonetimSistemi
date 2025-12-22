@@ -18,8 +18,8 @@
                 <i class="fas fa-user-plus"></i> Kullanıcı Ekle
             </button>
 
-            <button type="button" class="btn btn-danger" id="btnDeleteSelected"
-                    data-bs-toggle="modal" data-bs-target="#deleteSelectedModal" disabled>
+            <button type="button" class="btn btn-danger" id="btnDeleteSelected" data-bs-toggle="modal"
+                data-bs-target="#deleteSelectedModal" disabled>
                 Seçilenleri Sil
             </button>
         </div>
@@ -61,6 +61,38 @@
                         </button>
                     </td>
                 </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Depo tablosu---->
+<div class="Table">
+    <div class="TableHeader">
+        <h2 class="mb-0">Depolar</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWarehouseModal">
+            <i class="fas fa-warehouse"></i> Depo Ekle
+        </button>
+
+    </div>
+
+    <table class="Table-Table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Depo Adı</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.Warehouses != null)
+            {
+                foreach (var w in ViewBag.Warehouses)
+                {
+                    <tr>
+                        <td>@w.WarehouseId</td>
+                        <td>@w.WarehouseName</td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
@@ -181,6 +213,41 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteSelected">Sil</button>
             </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Depo ekleme modal-->
+<div class="modal fade" id="addWarehouseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Depo Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-controller="Profile" asp-action="AddWarehouse" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Depo Adı</label>
+                        <input type="text" name="warehouse" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        İptal
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        Kaydet
+                    </button>
+                </div>
+
+            </form>
 
         </div>
     </div>
