@@ -8,6 +8,6 @@ namespace DepoYonetimSistemi.Models
         public int WarehouseId { get; set; } //Foreign key
         public WareHouse? Warehouse { get; set; }
 
-        public int StockQuantity { get; set; } = 0;
+        public string SeriNumber { get; set; } = string.Empty;
     }
 }

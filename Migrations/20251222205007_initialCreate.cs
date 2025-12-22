@@ -3,68 +3,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace DepoYonetimSistemi.Migrations
 {
     /// <inheritdoc />
-    public partial class newDB : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Products_Categories_CategoryId",
-                table: "Products");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Products_CategoryId",
-                table: "Products");
-
-            migrationBuilder.DropColumn(
-                name: "CategoryId",
-                table: "Products");
-
-            migrationBuilder.DropColumn(
-                name: "CreatedAt",
-                table: "Products");
-
-            migrationBuilder.RenameColumn(
-                name: "Stock",
-                table: "Products",
-                newName: "ProductModelId");
-
-            migrationBuilder.RenameColumn(
-                name: "ProductName",
-                table: "Products",
-                newName: "SerialNumber");
-
-            migrationBuilder.AddColumn<int>(
-                name: "BrandId",
-                table: "Products",
-                type: "int",
-                nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "LocationId",
-                table: "Products",
-                type: "int",
-                nullable: true);
-
-            migrationBuilder.CreateTable(
-                name: "Brand",
-                columns: table => new
-                {
-                    BrandId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Brand", x => x.BrandId);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Cpus",
                 columns: table => new
@@ -119,6 +67,8 @@ namespace DepoYonetimSistemi.Migrations
                 {
                     RamId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Manufacturer = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SizeGB = table.Column<int>(type: "int", nullable: false),
                     SpeedMHz = table.Column<int>(type: "int", nullable: true)
@@ -150,9 +100,10 @@ namespace DepoYonetimSistemi.Migrations
                 {
                     StorageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Manufacturer = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CapacityGB = table.Column<int>(type: "int", nullable: false),
-                    Interface = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    CapacityGB = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -160,23 +111,54 @@ namespace DepoYonetimSistemi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductModel",
+                name: "Users",
                 columns: table => new
                 {
-                    ProductModelId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ModelName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BrandId = table.Column<int>(type: "int", nullable: false)
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductModel", x => x.ProductModelId);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WareHouses",
+                columns: table => new
+                {
+                    WarehouseId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WarehouseName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WareHouses", x => x.WarehouseId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SerialNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LocationId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
                     table.ForeignKey(
-                        name: "FK_ProductModel_Brand_BrandId",
-                        column: x => x.BrandId,
-                        principalTable: "Brand",
-                        principalColumn: "BrandId",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Products_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
+                        principalColumn: "LocationId");
                 });
 
             migrationBuilder.CreateTable(
@@ -276,6 +258,31 @@ namespace DepoYonetimSistemi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductStocks",
+                columns: table => new
+                {
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    WarehouseId = table.Column<int>(type: "int", nullable: false),
+                    SeriNumber = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductStocks", x => new { x.ProductId, x.WarehouseId });
+                    table.ForeignKey(
+                        name: "FK_ProductStocks_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductStocks_WareHouses_WarehouseId",
+                        column: x => x.WarehouseId,
+                        principalTable: "WareHouses",
+                        principalColumn: "WarehouseId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductStorages",
                 columns: table => new
                 {
@@ -299,20 +306,95 @@ namespace DepoYonetimSistemi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_BrandId",
-                table: "Products",
-                column: "BrandId");
+            migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    TransactionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    TransactionType = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.TransactionId);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_LocationId",
-                table: "Products",
-                column: "LocationId");
+            migrationBuilder.InsertData(
+                table: "Cpus",
+                columns: new[] { "CpuId", "BaseClockGHz", "BoostClockGHz", "Cores", "Manufacturer", "Model", "Threads" },
+                values: new object[,]
+                {
+                    { 1, 2.5, 4.4000000000000004, 6, "Intel", "Core i5-12400F", 12 },
+                    { 2, 3.7000000000000002, 4.5999999999999996, 6, "AMD", "Ryzen 5 5600X", 12 }
+                });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_ProductModelId",
-                table: "Products",
-                column: "ProductModelId");
+            migrationBuilder.InsertData(
+                table: "Gpus",
+                columns: new[] { "GpuId", "Manufacturer", "Memory", "Model" },
+                values: new object[,]
+                {
+                    { 1, "NVIDIA", "12GB GDDR6", "RTX 3060" },
+                    { 2, "AMD", "8GB GDDR6", "RX 6600 XT" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "LocationId", "Aisle", "Bin", "Shelf" },
+                values: new object[,]
+                {
+                    { 1, "A", "01", "1" },
+                    { 2, "A", "05", "2" },
+                    { 3, "B", "02", "1" },
+                    { 4, "C", "04", "3" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Rams",
+                columns: new[] { "RamId", "Manufacturer", "Model", "SizeGB", "SpeedMHz", "Type" },
+                values: new object[,]
+                {
+                    { 1, "Corsair", "Vengeance LPX", 16, 3200, "DDR4" },
+                    { 2, "Kingston", "Fury Beast", 32, 3600, "DDR4" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Screens",
+                columns: new[] { "ScreenId", "PanelType", "RefreshRate", "Resolution", "SizeInches" },
+                values: new object[,]
+                {
+                    { 1, "IPS", 60, "3840x2160", 27.0 },
+                    { 2, "IPS", 165, "1920x1080", 24.0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Storages",
+                columns: new[] { "StorageId", "CapacityGB", "Manufacturer", "Model", "Type" },
+                values: new object[,]
+                {
+                    { 1, 1000, "Samsung", "970 EVO Plus", "NVMe SSD" },
+                    { 2, 1000, "Seagate", "Barracuda", "HDD" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "CreatedAt", "Password", "Role", "UserName" },
+                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin", 0, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductCpus_CpuId",
@@ -325,14 +407,14 @@ namespace DepoYonetimSistemi.Migrations
                 column: "GpuId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductModel_BrandId",
-                table: "ProductModel",
-                column: "BrandId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductRams_RamId",
                 table: "ProductRams",
                 column: "RamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_LocationId",
+                table: "Products",
+                column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductScreens_ScreenId",
@@ -340,59 +422,40 @@ namespace DepoYonetimSistemi.Migrations
                 column: "ScreenId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductStocks_SeriNumber",
+                table: "ProductStocks",
+                column: "SeriNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductStocks_WarehouseId",
+                table: "ProductStocks",
+                column: "WarehouseId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductStorages_StorageId",
                 table: "ProductStorages",
                 column: "StorageId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Products_Brand_BrandId",
-                table: "Products",
-                column: "BrandId",
-                principalTable: "Brand",
-                principalColumn: "BrandId");
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_ProductId",
+                table: "Transactions",
+                column: "ProductId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Products_Locations_LocationId",
-                table: "Products",
-                column: "LocationId",
-                principalTable: "Locations",
-                principalColumn: "LocationId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Products_ProductModel_ProductModelId",
-                table: "Products",
-                column: "ProductModelId",
-                principalTable: "ProductModel",
-                principalColumn: "ProductModelId",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_UserId",
+                table: "Transactions",
+                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Products_Brand_BrandId",
-                table: "Products");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Products_Locations_LocationId",
-                table: "Products");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Products_ProductModel_ProductModelId",
-                table: "Products");
-
-            migrationBuilder.DropTable(
-                name: "Locations");
-
             migrationBuilder.DropTable(
                 name: "ProductCpus");
 
             migrationBuilder.DropTable(
                 name: "ProductGpus");
-
-            migrationBuilder.DropTable(
-                name: "ProductModel");
 
             migrationBuilder.DropTable(
                 name: "ProductRams");
@@ -401,7 +464,13 @@ namespace DepoYonetimSistemi.Migrations
                 name: "ProductScreens");
 
             migrationBuilder.DropTable(
+                name: "ProductStocks");
+
+            migrationBuilder.DropTable(
                 name: "ProductStorages");
+
+            migrationBuilder.DropTable(
+                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "Cpus");
@@ -410,86 +479,25 @@ namespace DepoYonetimSistemi.Migrations
                 name: "Gpus");
 
             migrationBuilder.DropTable(
-                name: "Brand");
-
-            migrationBuilder.DropTable(
                 name: "Rams");
 
             migrationBuilder.DropTable(
                 name: "Screens");
 
             migrationBuilder.DropTable(
+                name: "WareHouses");
+
+            migrationBuilder.DropTable(
                 name: "Storages");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Products_BrandId",
-                table: "Products");
+            migrationBuilder.DropTable(
+                name: "Products");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Products_LocationId",
-                table: "Products");
+            migrationBuilder.DropTable(
+                name: "Users");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Products_ProductModelId",
-                table: "Products");
-
-            migrationBuilder.DropColumn(
-                name: "BrandId",
-                table: "Products");
-
-            migrationBuilder.DropColumn(
-                name: "LocationId",
-                table: "Products");
-
-            migrationBuilder.RenameColumn(
-                name: "SerialNumber",
-                table: "Products",
-                newName: "ProductName");
-
-            migrationBuilder.RenameColumn(
-                name: "ProductModelId",
-                table: "Products",
-                newName: "Stock");
-
-            migrationBuilder.AddColumn<int>(
-                name: "CategoryId",
-                table: "Products",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "CreatedAt",
-                table: "Products",
-                type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_CategoryId",
-                table: "Products",
-                column: "CategoryId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Products_Categories_CategoryId",
-                table: "Products",
-                column: "CategoryId",
-                principalTable: "Categories",
-                principalColumn: "CategoryId",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.DropTable(
+                name: "Locations");
         }
     }
 }

@@ -52,20 +52,16 @@
                             ? $"{p.Location.Aisle}-{p.Location.Shelf}-{p.Location.Bin}"
                             : "-";
 
-                        var stock = p.ProductStocks.FirstOrDefault()?.StockQuantity ?? 0;
+                        var serinumber = p.ProductStocks.FirstOrDefault()?.SeriNumber;
 
                         <tr>
                             <td>@p.SerialNumber</td>
                             <td>@p.Brand @p.Model</td>
                             <td>@locationText</td>
                             <td class="text-end">
-                                @if (stock > 0)
+                                @if(!string.IsNullOrEmpty(serinumber))
                                 {
-                                    @stock
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">0</span>
+                                    @serinumber
                                 }
                             </td>
                         </tr>

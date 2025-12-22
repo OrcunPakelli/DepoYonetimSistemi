@@ -52,6 +52,9 @@ namespace DepoYonetimSistemi.Data
                 .HasOne(ps => ps.Warehouse)
                 .WithMany(w => w.ProductStocks)
                 .HasForeignKey(ps => ps.WarehouseId);
+            modelBuilder.Entity<ProductStock>()
+                .HasIndex(ps => ps.SeriNumber)
+                .IsUnique();
 
             //Product - Cpu many-to-many
             modelBuilder.Entity<ProductCpu>()

@@ -103,9 +103,7 @@ public class HomeController : Controller
             .Include(p => p.ProductScreens).ThenInclude(psc => psc.Screen)
             .Include(p => p.ProductStocks).ThenInclude(ps => ps.Warehouse)
             .AsQueryable();
-
-
-        query = query.Where(p => p.ProductStocks.Any(ps => ps.StockQuantity > 0));
+            
         // Marka
         if (!string.IsNullOrWhiteSpace(brand))
             query = query.Where(p => p.Brand.Contains(brand));

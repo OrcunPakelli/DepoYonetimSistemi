@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DepoYonetimSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251031205037_newSeedData")]
-    partial class newSeedData
+    [Migration("20251222205007_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -274,14 +274,23 @@ namespace DepoYonetimSistemi.Migrations
                     b.Property<int>("WarehouseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
+                    b.Property<string>("SeriNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ProductId", "WarehouseId");
 
+                    b.HasIndex("SeriNumber")
+                        .IsUnique();
+
                     b.HasIndex("WarehouseId");
 
-                    b.ToTable("ProductStocks");
+                    b.ToTable("ProductStocks", t =>
+                        {
+                            t.HasTrigger("trg_DeleteProductWhenAllStockZero");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("DepoYonetimSistemi.Models.ProductStorage", b =>

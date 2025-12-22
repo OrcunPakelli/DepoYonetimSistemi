@@ -172,7 +172,6 @@ namespace DepoYonetimSistemi.Controllers
                 {
                     ProductId = product.ProductId,
                     WarehouseId = warehouseId,
-                    StockQuantity = stock
                 });
 
                 _context.SaveChanges();
@@ -261,7 +260,6 @@ namespace DepoYonetimSistemi.Controllers
             var products = _context.Products
                 .Include(p => p.Location)
                 .Include(p => p.ProductStocks)
-                .Where(p => p.ProductStocks.Any(ps => ps.StockQuantity > 0))
                 .ToList();
 
             return View(products);
@@ -306,20 +304,10 @@ namespace DepoYonetimSistemi.Controllers
             }
 
             // Stok kontrolü
-            if (stock!.StockQuantity < quantity)
-            {
-                ModelState.AddModelError("quantity", "Stokta yeterli miktar yok.");
-                var list = _context.Products
-                    .Include(p => p.Location)
-                    .Include(p => p.ProductStocks)
-                    .ToList();
 
-                return View(list);
-            }
 
             // Stoktan düş
-            stock.StockQuantity -= quantity;
-            _context.ProductStocks.Update(stock);
+
 
             // Log kaydı
             var username = HttpContext.Session.GetString("Username");
