@@ -64,13 +64,22 @@ namespace DepoYonetimSistemi.Controllers
             string shelf,
             string bin,
             int warehouseId,
-            int stock,
+            string serialnum,
             List<int> selectedCpuIds,
             List<int> selectedGpuIds,
             List<int> selectedRamIds,
             List<int> selectedStorageIds,
             List<int> selectedScreenIds)
         {
+            bool serial = _context.ProductStocks.Any(sr => sr.SeriNumber == serialnum);
+
+            if (serial)
+            {
+                ModelState.AddModelError("", "Bu seri numarası zaten sisteme kayıtlı");
+                return View(product);
+            }
+
+
             if (ModelState.IsValid)
             {
                 // Yeni Location oluştur
@@ -187,7 +196,7 @@ namespace DepoYonetimSistemi.Controllers
                         ProductId = product.ProductId,
                         UserId = user.UserId,
                         TransactionType = TransactionType.In,
-                        Quantity = stock,
+                        SeriNo = serialnum,
                         CreatedAt = DateTime.Now
                     };
                     _context.Transactions.Add(log);
@@ -268,13 +277,10 @@ namespace DepoYonetimSistemi.Controllers
         // POST: Remove
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Remove(string serialNumber, int quantity)
+        public IActionResult Remove(string serialNumber, string serialnum)
         {
             if (string.IsNullOrWhiteSpace(serialNumber))
                 ModelState.AddModelError("serialNumber", "Lütfen seri numarası girin.");
-
-            if (quantity <= 0)
-                ModelState.AddModelError("quantity", "Kaldırılacak miktar 0'dan büyük olmalıdır.");
 
             var product = _context.Products
                 .Include(p => p.ProductStocks)
@@ -320,7 +326,7 @@ namespace DepoYonetimSistemi.Controllers
                     ProductId = product!.ProductId,
                     UserId = user.UserId,
                     TransactionType = TransactionType.Out,
-                    Quantity = quantity,
+                    SeriNo = serialnum,
                     CreatedAt = DateTime.Now
                 });
             }

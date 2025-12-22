@@ -253,7 +253,7 @@
         <tr>
             <th>Marka</th>
             <th>Model</th>
-            <th>Seri No</th>
+            <th>Ürün Kodu</th>
             <th>Depo</th>
             <th>Konum</th>
             <th>CPU</th>
@@ -261,7 +261,7 @@
             <th>RAM</th>
             <th>Depolama</th>
             <th>Ekran</th>
-            <th>Stok</th>
+            <th>Seri No</th>
         </tr>
     </thead>
 
@@ -279,7 +279,7 @@
                     {
                         foreach (var st in item.ProductStocks)
                         {
-                            <div>@st.Warehouse.WarehouseName</div>
+                            <div>@st.Warehouse?.WarehouseName</div>
                         }
                     }
                     else
@@ -346,7 +346,7 @@
 
                 <!-- Seri -->
                 <td>
-                    bak
+                    
                 </td>
             </tr>
         }

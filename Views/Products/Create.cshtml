@@ -55,7 +55,8 @@
             <label class="form-label">Raf</label>
             <select name="shelf" class="form-select">
                 <option value="">-- Raf Seçin --</option>
-                @foreach(var s in ViewBag.Shelves){
+                @foreach (var s in ViewBag.Shelves)
+                {
                     <option value="@s">@s</option>
                 }
             </select>
@@ -66,16 +67,17 @@
             <label class="form-label">Bölme</label>
             <select name="bin" class="form-select">
                 <option value="">-- Bölme Seçin --</option>
-                @foreach(var b in ViewBag.Bins)
+                @foreach (var b in ViewBag.Bins)
                 {
                     <option value="@b">@b</option>
                 }
             </select>
         </div>
 
+        <!-- Seri Numarası-->
         <div class="form-group mb-3 col-md-3">
-            <label class="form label">Adet</label>
-            <input type="number" name="stock" class="form-group" min="1" value="1" required>
+            <label class="form-label fw-bold">Seri Numarası</label>
+            <input type="text" name="serialNumber" class="form-control" required />
         </div>
 
     </div>

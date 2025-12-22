@@ -16,7 +16,7 @@ namespace DepoYonetimSistemi.Models
         public int UserId { get; set; } //Foreign Key
         public User? User { get; set; }
 
-        public int Quantity { get; set; }
+        public string SeriNo { get; set; } = string.Empty;
         public TransactionType TransactionType { get; set; } = TransactionType.In; //In veya Out, Default "In"
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
