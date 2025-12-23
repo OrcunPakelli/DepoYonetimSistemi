@@ -13,6 +13,10 @@
     string?[] selectedWarehouseIds  = Context.Request.Query["warehouseId"].ToArray();
 }
 
+@{
+    var totalProductCount = Model.Count();
+}
+
 
 <button type="button" class="btn btn-secondary openbtn" onclick="openNav()">
     Filtrele
@@ -245,6 +249,10 @@
 </div>
 
 <h2 class="mb-3">Ürün Listesi</h2>
+
+<div class="mb-2 fw-bold">
+    Toplam Ürün Sayısı: @totalProductCount
+</div>
 
 <!-- Ürün tablosu -->
 <div class="Table">

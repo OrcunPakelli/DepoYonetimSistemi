@@ -457,7 +457,7 @@ namespace DepoYonetimSistemi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<string>("SeriNo")
@@ -664,8 +664,7 @@ namespace DepoYonetimSistemi.Migrations
                     b.HasOne("DepoYonetimSistemi.Models.Product", "Product")
                         .WithMany("Transactions")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("DepoYonetimSistemi.Models.User", "User")
                         .WithMany("Transactions")

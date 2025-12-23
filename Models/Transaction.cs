@@ -10,7 +10,7 @@ namespace DepoYonetimSistemi.Models
     {
         public int TransactionId { get; set; } //Primary Key
 
-        public int ProductId { get; set; } //Foreign Key
+        public int? ProductId { get; set; } //Foreign Key
         public Product? Product { get; set; }
 
         public int UserId { get; set; } //Foreign Key

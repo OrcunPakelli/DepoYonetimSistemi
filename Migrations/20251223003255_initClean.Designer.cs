@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DepoYonetimSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251222205007_initialCreate")]
-    partial class initialCreate
+    [Migration("20251223003255_initClean")]
+    partial class initClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -460,11 +460,12 @@ namespace DepoYonetimSistemi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<string>("SeriNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TransactionType")
                         .HasColumnType("int");
@@ -666,8 +667,7 @@ namespace DepoYonetimSistemi.Migrations
                     b.HasOne("DepoYonetimSistemi.Models.Product", "Product")
                         .WithMany("Transactions")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("DepoYonetimSistemi.Models.User", "User")
                         .WithMany("Transactions")

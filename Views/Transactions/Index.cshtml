@@ -24,8 +24,7 @@
                    id="typeIn" @(qTypes.Contains("In") ? "checked" : "") />
             <label class="form-check-label" for="typeIn">Giriş</label>
         </div>
-        
-        <div class="form-check mb-3">
+    <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" name="types" value="Out"
                    id="typeOut" @(qTypes.Contains("Out") ? "checked" : "") />
             <label class="form-check-label" for="typeOut">Çıkış</label>
@@ -68,11 +67,10 @@
 
 <h2>İşlem Geçmişi</h2>
 <div class="Table">
-    <table class="Table-Table">
+    <table class="Table-Table" id="logTable">
         <thead>
             <tr>
                 <th>Kullanıcı</th>
-                <th>Ürün</th>
                 <th>İşlem</th>
                 <th>Seri Numarası</th>
                 <th>Tarih</th>
@@ -83,8 +81,14 @@
             {
                 <tr>
                     <td>@log.User?.UserName</td>
-                    <td>@log.Product?.SerialNumber</td>
-                    <td>@log.TransactionType</td>
+                        @if(log.TransactionType.ToString() == "In")
+                        {
+                            <td>Giriş</td>
+                        }
+                        else
+                        {
+                            <td>Çıkış</td>
+                        }
                     <td>@log.SeriNo</td>
                     <td>@log.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
                 </tr>
@@ -92,6 +96,10 @@
         </tbody>
     </table>
 </div>
+
+<button class="btn btn-outline-primary mb-3" onclick="printTable()">
+    Yazdır
+</button>
 
 @section Styles {
     <link rel="stylesheet" href="~/css/homeindex.css" />

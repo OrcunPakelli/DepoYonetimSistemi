@@ -38,6 +38,13 @@ namespace DepoYonetimSistemi.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Ürün Silindiğinde Giriş-Çıkış kayıtları saklansın
+            modelBuilder.Entity<Transaction>()
+                .HasOne(t => t.Product)
+                .WithMany()
+                .HasForeignKey(t => t.ProductId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<ProductStock>()
                .ToTable(tb => tb.HasTrigger("trg_DeleteProductWhenAllStockZero"));
 

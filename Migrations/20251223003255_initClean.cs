@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DepoYonetimSistemi.Migrations
 {
     /// <inheritdoc />
-    public partial class initialCreate : Migration
+    public partial class initClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -312,9 +312,9 @@ namespace DepoYonetimSistemi.Migrations
                 {
                     TransactionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    SeriNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransactionType = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -326,7 +326,7 @@ namespace DepoYonetimSistemi.Migrations
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Transactions_Users_UserId",
                         column: x => x.UserId,
