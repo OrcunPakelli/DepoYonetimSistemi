@@ -7,7 +7,7 @@
 <h2 class="mb-3">Ürün Kaldır</h2>
 
 <div class="row">
-    <!-- SOL KISIM -->
+    <!-- Ürün Kaldır -->
     <div class="col-md-4 mb-4">
         <form asp-action="Remove" method="post">
             @Html.AntiForgeryToken()
@@ -21,28 +21,22 @@
                 @Html.ValidationMessage("serialNumber", null, new { @class = "text-danger" })
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Kaldırılacak Adet</label>
-                <input type="number" name="quantity" class="form-control" min="1" value="1" required />
-                @Html.ValidationMessage("quantity", null, new { @class = "text-danger" })
-            </div>
-
             <div class="text-end">
                 <button type="submit" class="btn btn-danger px-4">Stoktan Düş</button>
             </div>
         </form>
     </div>
 
-    <!-- SAĞ KISIM: CANLI ÜRÜN LİSTESİ -->
+    <!-- Ürün Listesi -->
     <div class="col-md-8">
         <div class="table-responsive">
             <table class="table table-sm table-striped">
                 <thead>
                     <tr>
-                        <th>Seri No</th>
+                        <th>Ürün Kodu</th>
                         <th>Ürün</th>
                         <th>Konum</th>
-                        <th class="text-end">Stok</th>
+                        <th class="text-end">Seri Numarası</th>
                     </tr>
                 </thead>
                 <tbody>

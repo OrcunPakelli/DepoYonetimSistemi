@@ -71,6 +71,11 @@ namespace DepoYonetimSistemi.Controllers
             List<int> selectedStorageIds,
             List<int> selectedScreenIds)
         {
+            if (string.IsNullOrWhiteSpace(serialnum))
+            {
+                ModelState.AddModelError("SeriNumber", "Seri numarası boş olamaz");
+            }
+
             bool serial = _context.ProductStocks.Any(sr => sr.SeriNumber == serialnum);
 
             if (serial)
@@ -104,7 +109,7 @@ namespace DepoYonetimSistemi.Controllers
                     return View(product);
                 }
 
-                // Seri no oluştur
+                // Seri no oluştur(ürün kodu olarak güncellendi)
                 product.SerialNumber = GenerateProductCode(product, warehouse.WarehouseName, aisle, shelf, bin);
 
                 // Ürün kaydet
@@ -181,6 +186,7 @@ namespace DepoYonetimSistemi.Controllers
                 {
                     ProductId = product.ProductId,
                     WarehouseId = warehouseId,
+                    SeriNumber = serialnum
                 });
 
                 _context.SaveChanges();
@@ -233,8 +239,8 @@ namespace DepoYonetimSistemi.Controllers
         private string GenerateProductCode(Product product, string warehouse, string aisle, string shelf, string bin)
         {
             string brandPart = product.Brand.Length >= 2
-        ? product.Brand.Substring(0, 2).ToUpper()
-        : product.Brand.ToUpper();
+                ? product.Brand.Substring(0, 2).ToUpper()
+                : product.Brand.ToUpper();
 
             string modelPart = product.Model.Length >= 2
                 ? product.Model.Substring(0, 2).ToUpper()
@@ -277,27 +283,21 @@ namespace DepoYonetimSistemi.Controllers
         // POST: Remove
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Remove(string serialNumber, string serialnum)
+        public IActionResult Remove(string serialNumber)
         {
+
+
+
             if (string.IsNullOrWhiteSpace(serialNumber))
                 ModelState.AddModelError("serialNumber", "Lütfen seri numarası girin.");
 
-            var product = _context.Products
-                .Include(p => p.ProductStocks)
-                .FirstOrDefault(p => p.SerialNumber == serialNumber);
+            var stock = _context.ProductStocks
+                .Include(s => s.Product)
+                    .ThenInclude(p => p.Location)
+                .FirstOrDefault(s => s.SeriNumber == serialNumber);
 
-            if (product == null)
+            if (stock == null)
                 ModelState.AddModelError("serialNumber", "Bu seri numarasına ait ürün bulunamadı.");
-
-            ProductStock? stock = null;
-            if (product != null)
-            {
-                stock = _context.ProductStocks
-                    .FirstOrDefault(s => s.ProductId == product.ProductId);
-
-                if (stock == null)
-                    ModelState.AddModelError("quantity", "Bu ürün için stok kaydı bulunamadı.");
-            }
 
             if (!ModelState.IsValid)
             {
@@ -309,13 +309,19 @@ namespace DepoYonetimSistemi.Controllers
                 return View(list);
             }
 
-            // Stok kontrolü
+            var product = stock?.Product;
 
+            if (stock == null)
+            {
+                ModelState.AddModelError("", "Bu ürün için stok kaydı bulunamadı.");
+                return View();
+            }
 
-            // Stoktan düş
+            // Ürünü Sil
+            _context.ProductStocks.Remove(stock);
+            _context.Products.Remove(product);
 
-
-            // Log kaydı
+            // log
             var username = HttpContext.Session.GetString("Username");
             var user = _context.Users.FirstOrDefault(u => u.UserName == username);
 
@@ -323,17 +329,17 @@ namespace DepoYonetimSistemi.Controllers
             {
                 _context.Transactions.Add(new Transaction
                 {
-                    ProductId = product!.ProductId,
+                    ProductId = product.ProductId,
                     UserId = user.UserId,
                     TransactionType = TransactionType.Out,
-                    SeriNo = serialnum,
+                    SeriNo = serialNumber,
                     CreatedAt = DateTime.Now
                 });
             }
 
             _context.SaveChanges();
 
-            return RedirectToAction("Remove", "Products");
+            return RedirectToAction("Remove");
         }
 
     }
