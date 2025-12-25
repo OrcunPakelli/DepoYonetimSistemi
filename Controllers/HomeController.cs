@@ -103,7 +103,7 @@ public class HomeController : Controller
             .Include(p => p.ProductScreens).ThenInclude(psc => psc.Screen)
             .Include(p => p.ProductStocks).ThenInclude(ps => ps.Warehouse)
             .AsQueryable();
-            
+
         // Marka
         if (!string.IsNullOrWhiteSpace(brand))
             query = query.Where(p => p.Brand.Contains(brand));
@@ -113,9 +113,13 @@ public class HomeController : Controller
             query = query.Where(p => p.Model.Contains(model));
 
         // Seri No
+        // Seri No (ProductStocks üzerinden)
         if (!string.IsNullOrWhiteSpace(serialNumber))
-            query = query.Where(p => p.SerialNumber.Contains(serialNumber));
-
+        {
+            query = query.Where(p =>
+                p.ProductStocks.Any(ps => ps.SeriNumber.Contains(serialNumber))
+            );
+        }
         // Lokasyon
         if (locationId.HasValue)
             query = query.Where(p => p.LocationId == locationId.Value);
