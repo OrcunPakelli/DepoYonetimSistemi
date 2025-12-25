@@ -1,72 +1,57 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DepoYonetimSistemi</title>
+
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/DepoYonetimSistemi.styles.css" asp-append-version="true" />
+
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Admin Layout CSS -->
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DepoYonetimSistemi</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-            <!-- dropdown menü -->
-            <div class="d-flex align-items-center ms-auto">
-                <div class="dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <!--Butonlar-->
-                        <li>
-                            <a class="dropdown-item" asp-controller="Profile" asp-action="Index">Yönetim Paneli</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" asp-controller="Products" asp-action="Create">Ürün Ekle</a>
-                        </li>
 
-                        <li>
-                            <a class="dropdown-item" asp-controller="Products" asp-action="Remove">Ürün Çıkar</a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" asp-controller="Transactions" asp-action="Index">Log</a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" asp-controller="Home" asp-action="Logout">Çıkış Yap</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!---->
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    <!-- TOP BAR -->
+    <div class="top">
+        <h1>DEPO YÖNETİM PANELİ</h1>
     </div>
-    
-    <footer class="border-top footer text-muted">
-        
-    </footer>
+
+    <!-- SIDEBAR -->
+    <div class="sidenav">
+        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index"><i class="fa fa-home" aria-hidden="true"></i>  Ana Sayfa</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index"><i class="fa fa-cogs" aria-hidden="true"></i>  Yönetim Paneli</a></li>
+        <br>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" asp-controller="Products" asp-action="Create"><i class="fa fa-plus-square" aria-hidden="true"></i>  Ürün Ekle</a></li>
+        <li><a class="dropdown-item" asp-controller="Products" asp-action="Remove"><i class="fa fa-minus-square" aria-hidden="true"></i>  Ürün Çıkar</a></li>
+        <br>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" asp-controller="Transactions" asp-action="Index"><i class="fa fa-pencil" aria-hidden="true"></i>  Kayıtlar</a></li>
+        <br>
+        <li><hr class="dropdown-divider" /></li>
+        <li class="log-out"><a class="dropdown-item" asp-controller="Home" asp-action="Logout"><i class="fa fa-sign-out" aria-hidden="true"></i></i>  Çıkış Yap</a></li>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        @RenderBody()
+    </main>
+
+    <!-- SCRIPTS -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
-    @RenderSection("Styles", required: false)
 </body>
 </html>

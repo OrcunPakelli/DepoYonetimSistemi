@@ -256,7 +256,7 @@
 
 <!-- Ürün tablosu -->
 <div class="Table">
-<table class="Table-Table">
+<table class="styled-table">
     <thead>
         <tr>
             <th>Marka</th>
@@ -287,7 +287,7 @@
                     {
                         foreach (var st in item.ProductStocks)
                         {
-                            <div>@st.Warehouse?.WarehouseName</div>
+                            @st.Warehouse?.WarehouseName
                         }
                     }
                     else
@@ -301,9 +301,9 @@
                 <td>
                     @if (item.Location != null)
                     {
-                        <div>Koridor: @item.Location.Aisle</div>
-                        <div>Raf: @item.Location.Shelf</div>
-                        <div>Kutu: @item.Location.Bin</div>
+                        <div>@item.Location.Aisle @item.Location.Shelf @item.Location.Bin</div>
+                        <div></div>
+                        <div></div>
                     }
                     else
                     {

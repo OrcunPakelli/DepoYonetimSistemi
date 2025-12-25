@@ -1,10 +1,9 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+:root {
+  --bg-start: #B9BBDF;
+  --bg-end: #878ECD;
+  --card-border: rgba(27, 27, 27, 0.12);
 }
 
-/* Sol sidepanel */
 .sidepanel {
     position: fixed;      
     top: 0;
@@ -67,46 +66,38 @@ h2{
 
 /* Tablo still */
 
-.Table{
-    box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
+.styled-table {
+  width: 97%;
+  max-width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+  background: #fff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
-.Table-Table {
-    border-radius: 5px;
-    font-size: 12px;
-    font-weight: normal;
-    border: none;
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 100%;
-    white-space: nowrap;
-    background-color: white;
+.styled-table thead tr {
+  background-color: var(--bg-start);
+  color: #000000;
 }
 
-.Table-Table th {
-    text-align: center;
-    padding: 8px;
+.styled-table th,
+.styled-table td {
+  padding: 15px 24px;
+  line-height: 12px;
 }
-.Table-Table td {
-    text-align: left;
-    padding: 5px;
-}
-
-.Table-Table td {
-    border-right: 1px solid #f8f8f8;
-    font-size: 12px;
+.styled-table tbody tr {
+  border-bottom: 1px solid #dddddd;
 }
 
-.Table-Table thead th {
-    color: #ffffff;
-    background: #4FC3A1;
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
 }
 
-.Table-Table thead th:nth-child(odd) {
-    color: #ffffff;
-    background: #324960;
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid var(--bg-start);
 }
 
-.Table-Table tr:nth-child(even) {
-    background: #F8F8F8;
+.styled-table tbody tr.active-row {
+  font-weight: bold;
+  color: #009879;
 }

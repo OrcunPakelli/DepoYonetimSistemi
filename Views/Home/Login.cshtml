@@ -1,40 +1,19 @@
 <div class="container-fluid ps-md-0">
-  <div class="row g-0">
-    <!-- Sol taraf (Görsel) -->
-    <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image position-relative">
-      <!-- Ayrıcı çizgi -->
-      <div class="divider"></div>
-    </div>
+  <form class="card" asp-action="Login" method="post">
+    <h1>Hesabına Giriş Yap</h1>
 
-    <!-- Sağ taraf (Form) -->
-    <div class="col-md-8 col-lg-6">
-      <div class="login d-flex align-items-center py-5">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-9 col-lg-8 mx-auto">
-              <h3 class="login-heading mb-4">Giriş Yap</h3>
+    <label for="floatingInput">Kullanıcı Adı</label>
+    <input type="text" name="UserName" class="form-control" id="floatingInput">
 
-              <form asp-action="Login" method="post">
-                <!-- Kullanıcı adı-->
-                <div class="form-floating mb-3">
-                  <input type="text" name="UserName" class="form-control" id="floatingInput" placeholder="Kullanıcı Adı">
-                  <label for="floatingInput">Kullanıcı Adı</label>
-                </div>
-                <!-- Şifre-->
-                <div class="form-floating mb-3">
-                  <input type="password" name="Password" class="form-control" id="floatingPassword" placeholder="Şifre">
-                  <label for="floatingPassword">Şifre</label>
-                </div>
-                <!-- Giriş butonu-->
-                <div class="d-grid">
-                  <button class="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" type="submit">Giriş Yap  </button>
-                </div>
-                <p style="color:red;">@ViewBag.ErrorMessage</p>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    <label for="floatingPassword">Şifre</label>
+    <input type="password" name="Password" class="form-control" id="floatingPassword">
+
+    <button class="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" type="submit">Giriş Yap </button>
+
+    <p style="color:red;">@ViewBag.ErrorMessage</p>
+  </form>
 </div>
+
+@{
+  Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
