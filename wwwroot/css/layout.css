@@ -1,3 +1,8 @@
+html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
 :root {
   --bg-start: #B9BBDF;
   --bg-end: #878ECD;
@@ -19,8 +24,8 @@ body {
   position: fixed;
   top: 0;
   left: 0;
+  right: 0; 
   height: 35px;
-  width: 100%;
   background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
   display: flex;
   align-items: center;

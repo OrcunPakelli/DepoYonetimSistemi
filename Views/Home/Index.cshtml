@@ -23,8 +23,9 @@
     Toplam Ürün Sayısı: @totalProductCount
 </div>
 
-<button class="btn btn-outline-primary mb-3" onclick="toggleFilters()">
-    🔽 Filtreler
+<button id="filterToggleBtn" class="filter-toggle-btn" type="button">
+    <i id="filterArrow" class="fa-solid fa-chevron-down"></i>
+    Filtreler
 </button>
 
 <!-- FİLTRE PANELİ -->
@@ -283,14 +284,6 @@
     </tbody>
 </table>
 </div>
-
-<script>
-    function toggleFilters() {
-        document.getElementById("filterPanel")
-            .classList.toggle("open");
-    }
-</script>
-
 
 @section Styles {
     <link rel="stylesheet" href="~/css/homeindex.css" />

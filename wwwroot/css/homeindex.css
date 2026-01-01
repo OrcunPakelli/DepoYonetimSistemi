@@ -104,17 +104,55 @@ h2{
 }
 
 .filter-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height .35s ease;
+    width: 97%;
+    max-width: 100%;
     background: #f8f9fa;
     border-radius: 8px;
-    padding: 0 20px;
-    position: relative;
-    z-index: 5;
+    padding: 20px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height .35s ease, opacity .25s ease;
 }
 
 .filter-panel.open {
     max-height: 3000px;
-    padding: 20px;
+    opacity: 1;
+}
+
+/* Filtre Toggle Butonu */
+.filter-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-start);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.filter-toggle-btn:hover {
+    background: var(--bg-end);
+    transform: translateY(-1px);
+}
+
+/* Panel açıkken buton görünümü */
+.filter-toggle-btn.active {
+    background: #343a40;
+    color: #fff;
+}
+
+/* Ok animasyonu */
+.filter-toggle-btn i {
+    transition: transform 0.3s ease;
+}
+
+.filter-toggle-btn.active i {
+    transform: rotate(180deg);
 }
