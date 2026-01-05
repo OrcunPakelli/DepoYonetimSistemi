@@ -35,7 +35,11 @@ namespace DepoYonetimSistemi.Controllers
             }
             if (role == UserRole.Manager.ToString())
             {
-                return View("ManagerIndex");
+                return RedirectToAction("Index", "Home");
+            }
+            if (role == UserRole.Employee.ToString())
+            {
+                return RedirectToAction("Index", "Home");
             }
 
             return View();
