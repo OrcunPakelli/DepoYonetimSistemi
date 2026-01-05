@@ -71,3 +71,4 @@ function printTable() {
     newWindow.print();
     newWindow.close();
 }
+
