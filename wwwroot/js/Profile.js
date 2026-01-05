@@ -71,3 +71,18 @@ document.addEventListener("change", function (e) {
         toggleDeleteBtn();
     }
 });
+
+const componentSelect = document.getElementById("componentTypeSelect");
+const componentForms = document.querySelectorAll(".component-form");
+
+function hideComponentForms() {
+    componentForms.forEach(f => f.style.display = "none");
+}
+
+componentSelect?.addEventListener("change", function () {
+    hideComponentForms();
+    if (!this.value) return;
+    document.getElementById(this.value + "Form").style.display = "block";
+});
+
+hideComponentForms();

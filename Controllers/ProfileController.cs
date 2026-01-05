@@ -238,5 +238,138 @@ namespace DepoYonetimSistemi.Controllers
             TempData["Msg"] = "Depo Eklendi";
             return RedirectToAction("Index");
         }
+
+        // ================= CPU =================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddCpu(Cpu cpu)
+        {
+            // Login kontrol
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("Login", "Home");
+
+            // Admin kontrol
+            var role = HttpContext.Session.GetString("Role");
+            if (role != UserRole.SystemAdmin.ToString())
+                return RedirectToAction("Index");
+
+            if (string.IsNullOrWhiteSpace(cpu.Model))
+            {
+                TempData["Err"] = "CPU modeli boş olamaz";
+                return RedirectToAction("Index");
+            }
+
+            _context.Cpus.Add(cpu);
+            _context.SaveChanges();
+
+            TempData["Msg"] = "CPU başarıyla eklendi";
+            return RedirectToAction("Index");
+        }
+
+        // ================= GPU =================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddGpu(Gpu gpu)
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("Login", "Home");
+
+            var role = HttpContext.Session.GetString("Role");
+            if (role != UserRole.SystemAdmin.ToString())
+                return RedirectToAction("Index");
+
+            if (string.IsNullOrWhiteSpace(gpu.Model))
+            {
+                TempData["Err"] = "GPU modeli boş olamaz";
+                return RedirectToAction("Index");
+            }
+
+            _context.Gpus.Add(gpu);
+            _context.SaveChanges();
+
+            TempData["Msg"] = "GPU başarıyla eklendi";
+            return RedirectToAction("Index");
+        }
+
+        // ================= RAM =================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddRam(Ram ram)
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("Login", "Home");
+
+            var role = HttpContext.Session.GetString("Role");
+            if (role != UserRole.SystemAdmin.ToString())
+                return RedirectToAction("Index");
+
+            if (string.IsNullOrWhiteSpace(ram.Model))
+            {
+                TempData["Err"] = "RAM modeli boş olamaz";
+                return RedirectToAction("Index");
+            }
+
+            _context.Rams.Add(ram);
+            _context.SaveChanges();
+
+            TempData["Msg"] = "RAM başarıyla eklendi";
+            return RedirectToAction("Index");
+        }
+
+        // ================= STORAGE =================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddStorage(Storage storage)
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("Login", "Home");
+
+            var role = HttpContext.Session.GetString("Role");
+            if (role != UserRole.SystemAdmin.ToString())
+                return RedirectToAction("Index");
+
+            if (string.IsNullOrWhiteSpace(storage.Model))
+            {
+                TempData["Err"] = "Storage modeli boş olamaz";
+                return RedirectToAction("Index");
+            }
+
+            _context.Storages.Add(storage);
+            _context.SaveChanges();
+
+            TempData["Msg"] = "Storage başarıyla eklendi";
+            return RedirectToAction("Index");
+        }
+
+        // ================= SCREEN =================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddScreen(Screen screen)
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("Login", "Home");
+
+            var role = HttpContext.Session.GetString("Role");
+            if (role != UserRole.SystemAdmin.ToString())
+                return RedirectToAction("Index");
+
+            if (string.IsNullOrWhiteSpace(screen.Resolution))
+            {
+                TempData["Err"] = "Ekran çözünürlüğü boş olamaz";
+                return RedirectToAction("Index");
+            }
+
+            _context.Screens.Add(screen);
+            _context.SaveChanges();
+
+            TempData["Msg"] = "Ekran başarıyla eklendi";
+            return RedirectToAction("Index");
+        }
+
     }
 }

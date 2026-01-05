@@ -70,6 +70,11 @@
 <div class="Table">
     <div class="TableHeader">
         <h2 class="mb-0">Depolar</h2>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addComponentModal">
+            <i class="fas fa-microchip"></i> Bileşen Ekle
+        </button>
+
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWarehouseModal">
             <i class="fas fa-warehouse"></i> Depo Ekle
         </button>
@@ -253,6 +258,178 @@
     </div>
 </div>
 
+<div class="modal fade" id="addComponentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Bileşen Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label class="form-label">Bileşen Türü</label>
+                    <select id="componentTypeSelect" class="form-select">
+                        <option value="">Seçiniz</option>
+                        <option value="cpu">CPU</option>
+                        <option value="gpu">GPU</option>
+                        <option value="storage">Storage</option>
+                        <option value="screen">Screen</option>
+                        <option value="ram">RAM</option>
+                    </select>
+                </div>
+
+                <!-- CPU -->
+                <form asp-action="AddCpu" asp-controller="Profile" method="post" class="component-form" id="cpuForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-2">
+                        <label class="form-label">Model</label>
+                        <input name="Model" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Üretici</label>
+                        <input name="Manufacturer" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Çekirdek Sayısı</label>
+                        <input name="Cores" type="number" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Thread Sayısı</label>
+                        <input name="Threads" type="number" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Base Clock (GHz)</label>
+                        <input name="BaseClockGHz" type="number" step="0.1" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Boost Clock (GHz)</label>
+                        <input name="BoostClockGHz" type="number" step="0.1" class="form-control" />
+                    </div>
+
+                    <button class="btn btn-success">CPU Kaydet</button>
+                </form>
+
+                <!-- GPU -->
+                <form asp-action="AddGpu" asp-controller="Profile" method="post" class="component-form" id="gpuForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-2">
+                        <label class="form-label">Model</label>
+                        <input name="Model" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Üretici</label>
+                        <input name="Manufacturer" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Bellek</label>
+                        <input name="Memory" class="form-control" />
+                    </div>
+
+                    <button class="btn btn-success">GPU Kaydet</button>
+                </form>
+                <!-- Storage -->
+                <form asp-action="AddStorage" asp-controller="Profile" method="post" class="component-form"
+                    id="storageForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-2">
+                        <label class="form-label">Model</label>
+                        <input name="Model" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Üretici</label>
+                        <input name="Manufacturer" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Tür</label>
+                        <input name="Type" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kapasite (GB)</label>
+                        <input name="CapacityGB" type="number" class="form-control" />
+                    </div>
+
+                    <button class="btn btn-success">Storage Kaydet</button>
+                </form>
+
+                <!-- Screen -->
+                <form asp-action="AddScreen" asp-controller="Profile" method="post" class="component-form"
+                    id="screenForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-2">
+                        <label class="form-label">Ekran Boyutu (inç)</label>
+                        <input name="SizeInches" type="number" step="0.1" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Çözünürlük</label>
+                        <input name="Resolution" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Yenileme Hızı (Hz)</label>
+                        <input name="RefreshRate" type="number" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Panel Tipi</label>
+                        <input name="PanelType" class="form-control" />
+                    </div>
+
+                    <button class="btn btn-success">Ekran Kaydet</button>
+                </form>
+                <!-- Ram -->
+                <form asp-action="AddRam" asp-controller="Profile" method="post" class="component-form" id="ramForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-2">
+                        <label class="form-label">Model</label>
+                        <input name="Model" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Üretici</label>
+                        <input name="Manufacturer" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">RAM Tipi</label>
+                        <input name="Type" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Kapasite (GB)</label>
+                        <input name="SizeGB" type="number" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Hız (MHz)</label>
+                        <input name="SpeedMHz" type="number" class="form-control" />
+                    </div>
+
+                    <button class="btn btn-success">RAM Kaydet</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Styles {
     <link rel="stylesheet" href="~/css/AdminIndex.css" />
 }
@@ -260,4 +437,3 @@
 @section Scripts {
     <script src="~/js/Profile.js"></script>
 }
-
