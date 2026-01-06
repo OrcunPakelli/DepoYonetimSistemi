@@ -35,14 +35,17 @@ public class HomeController : Controller
     )
     {
         // Kullanıcı girişi kontrolü
+        // Kullanıcı adı bilgisi sessiondan alınır 
+        // username değişkenine atanır
         var username = HttpContext.Session.GetString("Username");
+        //Eğer kullanıcı adı boş ise
         if (string.IsNullOrEmpty(username))
         {
+            //Login sayfasına yönlendirilir
             return RedirectToAction("Login", "Home");
         }
 
-        // --- DROPDOWN VERİLERİ ---
-
+        // Filtreleme için gerekli veriler ViewBag ile View'a gönderiliyor
         // Lokasyon (koridor/raf/kutu)
         ViewBag.Locations = _context.Locations.ToList();
 
@@ -92,8 +95,9 @@ public class HomeController : Controller
         // Depolar
         ViewBag.Warehouses = _context.WareHouses.ToList();
 
-        // --- ÜRÜN SORGUSU ---
-
+        // Ürün ve ürüne bağlı tüm detayların
+        // Tek seferde veritbanından çekilmesi ve
+        // View kısmında tablonun dolurulaması
         var query = _context.Products
             .Include(p => p.Location)
             .Include(p => p.ProductCpus).ThenInclude(pc => pc.Cpu)
@@ -113,7 +117,6 @@ public class HomeController : Controller
             query = query.Where(p => p.Model.Contains(model));
 
         // Seri No
-        // Seri No (ProductStocks üzerinden)
         if (!string.IsNullOrWhiteSpace(serialNumber))
         {
             query = query.Where(p =>
@@ -123,8 +126,6 @@ public class HomeController : Controller
         // Lokasyon
         if (locationId.HasValue)
             query = query.Where(p => p.LocationId == locationId.Value);
-
-        // --- TEKNİK ÖZELLİK FİLTRELERİ ---
 
         // CPU
         if (cpuId != null && cpuId.Any())
@@ -152,7 +153,7 @@ public class HomeController : Controller
             query = query.Where(p =>
                 p.ProductRams.Any(pr => ramType.Contains(pr.Ram.Type)));
         }
-        // Depolama kapasitesif
+        // Depolama kapasitesi
         if (storageCapacity != null && storageCapacity.Any())
         {
             query = query.Where(p =>
@@ -181,7 +182,7 @@ public class HomeController : Controller
                 p.ProductScreens.Any(psc => screenResolution.Contains(psc.Screen.Resolution)));
         }
 
-        // Depo (warehouse) – ürünün stoğu hangi depoda ise
+        // Depo
         if (warehouseId != null && warehouseId.Any())
         {
             query = query.Where(p =>
@@ -208,24 +209,35 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult Login(string Username, string Password)
     {
-        //kullanıcı giriş işlemler
-        var user = _context.Users.FirstOrDefault(u => u.UserName == Username && u.Password == Password);//Girilen giriş bilgileri kontrol ediliyor
-        if (user != null)//Kullanıcı veri tabanına kayıtlı mı kontrol ediliyor
+        // kullanıcı giriş işlemler
+        // Girilen kullanıcı adı ve şifre user değişkenine atanır
+        var user = _context.Users.FirstOrDefault(u => u.UserName == Username && u.Password == Password);
+        // Eğer user değişkeni null değil ise 
+        // (yani kullanıcı adı ve şifre doğru ise) giriş yapılır
+        if (user != null)
         {
+            // Giriş başarılı ise 
+            // kullanıcı ismi ve rol bilgisi sessiona atanır
             HttpContext.Session.SetString("Username", user.UserName);
             HttpContext.Session.SetString("Role", user.Role.ToString());
+            //Ana sayfaya yönlendirilir
             return RedirectToAction("Index", "Home");
         }
-
-        ViewBag.ErrorMessage = "kullanıcı adı veya şifre hatalı";//Yanlış girişde hatalı mesajı gösterir
+        // Eğer kullanıcı adı veya şifre hatalı ise 
+        // tekrar login sayfasına yönlendirilir ve 
+        // hata mesajı gösterilir
+        ViewBag.ErrorMessage = "kullanıcı adı veya şifre hatalı";
         return View();
     }
 
     public IActionResult Logout()
     {
-        HttpContext.Session.Clear();//Session sonlandırılıyor
+        // Kullanıcı çıkış işlemleri
+        // Session sonlandırılır
+        HttpContext.Session.Clear();
 
-        return RedirectToAction("Login", "Home");//Login safyasına yönlendiriliyor
+        // Login safyasına yönlendirilir
+        return RedirectToAction("Login", "Home");
     }
 
     public IActionResult Privacy()

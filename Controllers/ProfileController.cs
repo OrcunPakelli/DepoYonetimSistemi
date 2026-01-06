@@ -16,29 +16,40 @@ namespace DepoYonetimSistemi.Controllers
         }
         public IActionResult Index()
         {
+            // Kullanıcı girişi kontrolü
+            // Kullanıcı adı bilgisi sessiondan alınır 
+            // username değişkenine atanır
             var username = HttpContext.Session.GetString("Username");
-            //Login kontrol
             if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("Login", "Home");
             }
 
-            //Kullanıcıları al
+            // Tablo gösterilen kullanıcı bilgileri
+            // Veri tabanından alınır
             var users = _context.Users.ToList();
 
+            // Kullanıcı rolü kontrolü
+            // Rol bilgisi sessiondan alınır
+            // role değişkenine atanır
             var role = HttpContext.Session.GetString("Role");
-            //Rol kontrolü
+            // Eğer kullanıcı rolü Sistem Yöneticisi ise
             if (role == UserRole.SystemAdmin.ToString())
             {
+                // AdminIndex view'ı döndürülür
                 ViewBag.warehouses = _context.WareHouses.ToList();
                 return View("AdminIndex", users);
             }
+            // Eğer kullanıcı rolü Yönetici ise
             if (role == UserRole.Manager.ToString())
             {
+                // Anasayfaya yönlendirilir
                 return RedirectToAction("Index", "Home");
             }
+            // Eğer kullanıcı rolü Çalışan ise
             if (role == UserRole.Employee.ToString())
             {
+                // Anasayfaya yönlendirilir
                 return RedirectToAction("Index", "Home");
             }
 
@@ -49,82 +60,110 @@ namespace DepoYonetimSistemi.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AdminChangePassword(int userId, string newPassword, string confirmPassword)
         {
-            //Login kontrol
+            // Kullanıcı girişi kontrolü
+            // Kullanıcı adı bilgisi sessiondan alınır 
+            // username değişkenine atanır
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("Login", "Home");
             }
 
-            //Admin kontrol
+            // Kullanıcı rolü kontrolü
+            // Rol bilgisi sessiondan alınır
+            // role değişkenine atanır
             var role = HttpContext.Session.GetString("Role");
             if (role != UserRole.SystemAdmin.ToString())
             {
                 return RedirectToAction("Index");
             }
 
-            //Şifre Deiştirme
+            // Şifre değiştirme işlemi
+            // Eğer girilen yeni şifre boş ise
             if (string.IsNullOrWhiteSpace(newPassword))
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Şifre boş olmamalı";
                 return RedirectToAction("Index");
             }
+            // Eğer girilen yeni şifre ile onay şifresi uyuşmuyor ise
             if (newPassword != confirmPassword)
             {
+                // Hata Mesajı döndürülür
                 TempData["err"] = "Şifreler birbiriyle uyuşmuyor";
             }
 
+            // Kullanıcı veritabanından alınır
             var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            // Eğer kullanıcı bulunamazsa
             if (user == null)
             {
+                // Hata Mesajı döndürülür
                 TempData["err"] = "Kullanıcı bulunamadı";
                 return RedirectToAction("Index");
             }
 
+            // Yeni şifre kullanıcıya atanır
             user.Password = newPassword;
+            // Değişiklikler veritabanına kaydedilir
             _context.SaveChanges();
+            // Başarı Mesajı döndürülür
             TempData["Msg"] = $"{user.UserName} için şifre güncellendi";
             return RedirectToAction("Index");
         }
 
         public IActionResult CreateUser(string userName, string password, string confirmPassword, int userRole)
         {
-            //Login kontrol
+            // Kullanıcı girişi kontrolü
+            // Kullanıcı adı bilgisi sessiondan alınır 
+            // username değişkenine atanır
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("Login", "Home");
             }
 
-            //Admin kontrol
+            // Kullanıcı rolü kontrolü
+            // Rol bilgisi sessiondan alınır
+            // role değişkenine atanır
             var role = HttpContext.Session.GetString("Role");
             if (role != UserRole.SystemAdmin.ToString())
             {
                 return RedirectToAction("Index");
             }
 
+            // Yeni kullanıcı oluşturma işlemi
+            // Eğer kullanıcı adı boş ise
             if (string.IsNullOrWhiteSpace(userName))
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Kullanıcı adı boş olamaz.";
                 return RedirectToAction("Index");
             }
 
+            // Eğer şifre boş ise
             if (string.IsNullOrWhiteSpace(password))
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Şifre boş olmamalı";
                 return RedirectToAction("Index");
             }
+            // Eğer şifre ile onay şifresi uyuşmuyor ise
             if (password != confirmPassword)
             {
+                // Hata Mesajı döndürülür
                 TempData["err"] = "Şifreler birbiriyle uyuşmuyor";
             }
 
+            // Eğer aynı kullanıcı adı zaten var ise
             if (_context.Users.Any(u => u.UserName == userName))
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Bu kullanıcı adı zaten var.";
                 return RedirectToAction("Index");
             }
 
+            // Yeni kullanıcı nesnesi oluşturulur
             var newUser = new User
             {
                 UserName = userName.Trim(),
@@ -133,9 +172,11 @@ namespace DepoYonetimSistemi.Controllers
                 CreatedAt = DateTime.Now
             };
 
+            // Yeni kullanıcı veritabanına eklenir
             _context.Users.Add(newUser);
             _context.SaveChanges();
 
+            // Başarı Mesajı döndürülür
             TempData["Msg"] = "Kullanıcı başarıyla eklendi.";
             return RedirectToAction("Index");
         }
@@ -144,26 +185,34 @@ namespace DepoYonetimSistemi.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteSelectedUsers(string ids)
         {
-            //Login kontrol
+            // Kullanıcı girişi kontrolü
+            // Kullanıcı adı bilgisi sessiondan alınır 
+            // username değişkenine atanır
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("Login", "Home");
             }
 
-            //Admin kontrol
+            // Kullanıcı rolü kontrolü
+            // Rol bilgisi sessiondan alınır
+            // role değişkenine atanır
             var role = HttpContext.Session.GetString("Role");
             if (role != UserRole.SystemAdmin.ToString())
             {
                 return RedirectToAction("Index");
             }
 
+            // Kullnacı silme işlemi
+            // Eğer ids parametresi boş ise
             if (string.IsNullOrWhiteSpace(ids))
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Silinecek kullanıcı seçilmedi.";
                 return RedirectToAction("Index");
             }
 
+            // Ids parametresi virgülle ayrılarak int listesine dönüştürülür
             var idList = ids.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => int.TryParse(s, out var x) ? x : (int?)null)
                     .Where(x => x.HasValue)
@@ -171,103 +220,139 @@ namespace DepoYonetimSistemi.Controllers
                     .Distinct()
                     .ToList();
 
+            // Eğer idList boş ise
             if (idList.Count == 0)
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Geçersiz seçim.";
                 return RedirectToAction("Index");
             }
 
-            //Kullanıcı kendi hesabını silemesin
+            // Kullanıcı kendi hesabını silemesin
+            // Mevcut kullanıcı veritabanından alınır ve
+            // currentuser değişkenine atanır
             var currentUser = _context.Users.FirstOrDefault(u => u.UserName == username);
+            // Eğer currentuser değişkeni null değil ise
             if (currentUser != null)
             {
+                // Kendi userId'si idList'ten çıkarılır
                 idList.Remove(currentUser.UserId);
             }
 
+            // Silinecek kullanıcılar veritabanından alınır
             var usersToDelete = _context.Users.Where(u => idList.Contains(u.UserId)).ToList();
 
+            // Eğer silinecek kullanıcı bulunamazsa
             if (usersToDelete.Count == 0)
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Silinecek kullanıcı bulunamadı.";
                 return RedirectToAction("Index");
             }
 
+            // Kullanıcılar veritabanından silinir
             _context.Users.RemoveRange(usersToDelete);
+            // Değişiklikler veritabanına kaydedilir
             _context.SaveChanges();
-
+            // Başarı Mesajı döndürülür
             TempData["Msg"] = $"{usersToDelete.Count} kullanıcı silindi.";
             return RedirectToAction("Index");
         }
 
         public IActionResult AddWareHouse(string warehouse)
         {
-            //Login kontrol
+            // Kullanıcı girişi kontrolü
+            // Kullanıcı adı bilgisi sessiondan alınır 
+            // username değişkenine atanır
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("Login", "Home");
             }
 
-            //Admin kontrol
+            // Kullanıcı rolü kontrolü
+            // Rol bilgisi sessiondan alınır
+            // role değişkenine atanır
             var role = HttpContext.Session.GetString("Role");
+            // Eğer kullanıcı rolü Sistem Yöneticisi değilse
             if (role != UserRole.SystemAdmin.ToString())
             {
+                // Anasayfaya yönlendirilir
                 return RedirectToAction("Index");
             }
 
+            // Depo ekleme işlemi
+            // Eğer depo adı boş ise
             if (string.IsNullOrWhiteSpace(warehouse))
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Depo Adı boş olamaz";
                 return RedirectToAction("Index");
             }
 
+            // Eğer aynı depo adı zaten var ise
+            // exists değişkeni true değer alır
             bool exists = _context.WareHouses.Any(wr => wr.WarehouseName == warehouse);
-
+            // Eğer exists true ise
             if (exists)
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "Bu depo zaten mevcut";
                 return RedirectToAction("Index");
             }
 
+            // Yeni depo nesnesi oluşturulur ve veritabanına eklenir
             _context.WareHouses.Add(new WareHouse
             {
+                // Depo adı atanır
                 WarehouseName = warehouse.Trim(),
             });
 
+            // Değişiklikler veritabanına kaydedilir
             _context.SaveChanges();
+            // Başarı Mesajı döndürülür
             TempData["Msg"] = "Depo Eklendi";
             return RedirectToAction("Index");
         }
 
-        // ================= CPU =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddCpu(Cpu cpu)
         {
-            // Login kontrol
+            // Kullanıcı girişi kontrolü
+            // Kullanıcı adı bilgisi sessiondan alınır 
+            // username değişkenine atanır
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
                 return RedirectToAction("Login", "Home");
 
-            // Admin kontrol
+            // Kullanıcı rolü kontrolü
+            // Rol bilgisi sessiondan alınır
+            // role değişkenine atanır
             var role = HttpContext.Session.GetString("Role");
+            // Eğer kullanıcı rolü Sistem Yöneticisi değilse
             if (role != UserRole.SystemAdmin.ToString())
+                // Anasayfaya yönlendirilir
                 return RedirectToAction("Index");
 
+            // CPU ekleme işlemi
+            // Eğer CPU modeli boş ise
             if (string.IsNullOrWhiteSpace(cpu.Model))
             {
+                // Hata Mesajı döndürülür
                 TempData["Err"] = "CPU modeli boş olamaz";
                 return RedirectToAction("Index");
             }
-
+            
+            // Yeni CPU veritabanına eklenir
             _context.Cpus.Add(cpu);
+            // Değişiklikler veritabanına kaydedilir
             _context.SaveChanges();
-
+            // Başarı Mesajı döndürülür
             TempData["Msg"] = "CPU başarıyla eklendi";
             return RedirectToAction("Index");
         }
 
-        // ================= GPU =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddGpu(Gpu gpu)
@@ -293,7 +378,6 @@ namespace DepoYonetimSistemi.Controllers
             return RedirectToAction("Index");
         }
 
-        // ================= RAM =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddRam(Ram ram)
@@ -319,7 +403,6 @@ namespace DepoYonetimSistemi.Controllers
             return RedirectToAction("Index");
         }
 
-        // ================= STORAGE =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddStorage(Storage storage)
@@ -345,7 +428,6 @@ namespace DepoYonetimSistemi.Controllers
             return RedirectToAction("Index");
         }
 
-        // ================= SCREEN =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddScreen(Screen screen)
